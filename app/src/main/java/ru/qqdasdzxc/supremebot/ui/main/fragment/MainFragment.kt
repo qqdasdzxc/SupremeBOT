@@ -1,19 +1,21 @@
 package ru.qqdasdzxc.supremebot.ui.main.fragment
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
 import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
-import android.webkit.ValueCallback
 import android.webkit.JavascriptInterface
-import androidx.core.text.HtmlCompat
-import java.io.IOException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
+import ru.qqdasdzxc.supremebot.R
 
 
 class MainFragment : BaseFragment<FragmentMainViewBinding>() {
@@ -44,7 +46,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
 //                val javasriptInterface = JavascriptInterface(activity)
 //                view?.addJavascriptInterface(javasriptInterface, "MyInterface")
 
-
                 //todo save state depends on finished url
             }
         }
@@ -52,7 +53,20 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
 
         }
 
-        binding.mainWebView.loadUrl("https://www.supremenewyork.com/mobile/")
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all/jackets")
+
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val doc = Jsoup.connect("https://www.supremenewyork.com/shop/all/jackets").get()
+            doc.body()
+
+            //todo подумать что лучше - цепать сразу все элементы или пройтись по чайлдам вручную
+            //doc.getElementsByAttributeValueContaining("class", "turbolink_scroller")
+            val scroller = doc.allElements.firstOrNull { it.attributes().get("class") == "turbolink_scroller" }
+            //scroller.hashCode()
+        }
+
+
     }
 }
 

@@ -45,5 +45,7 @@ dependencies {
         exclude group: 'com.android.support'
     })
 
-    implementation 'org.jsoup:jsoup:1.8.3'
+    implementation 'org.jsoup:jsoup:1.12.1'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
 }
