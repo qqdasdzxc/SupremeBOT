@@ -4,21 +4,21 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
-import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
-import android.webkit.JavascriptInterface
+import android.webkit.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
+import ru.qqdasdzxc.supremebot.data.OrderState
+import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
+import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
 
 
 class MainFragment : BaseFragment<FragmentMainViewBinding>() {
+
+    var clothHref: String? = null
+    var currentState = OrderState.SINGLE_ITEM_STATE
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
 
@@ -30,21 +30,81 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
 
     private fun initView() {
         binding.mainWebView.settings.javaScriptEnabled = true
+        binding.mainWebView.settings.domStorageEnabled = true
 
-        binding.mainWebView.addJavascriptInterface(MyJavaScriptInterface(), "HTMLOUT")
+        val javasriptInterface = MyJavaScriptInterface()
+        binding.mainWebView.addJavascriptInterface(javasriptInterface, "HTMLOUT")
 
         binding.mainWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
 
-                return true
+                return false
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
-                binding.mainWebView.loadUrl("javascript:window.HTMLOUT.processHTML('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');")
-//                val javasriptInterface = JavascriptInterface(activity)
-//                view?.addJavascriptInterface(javasriptInterface, "MyInterface")
+                url?.let { urlPage ->
+                    if (clothHref != null && urlPage.endsWith(clothHref!!)) {
+                        when (currentState) {
+//                            OrderState.SCROLL_ITEMS_STATE -> {
+//                                currentState = OrderState.SINGLE_ITEM_STATE
+//                            }
+                            OrderState.SINGLE_ITEM_STATE -> {
+                                val js = "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
+//
+                                binding.mainWebView.evaluateJavascript(js) {
+                                    currentState = OrderState.ITEM_IN_BASKET_STATE
+
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val doc = Jsoup.connect(urlPage).get()
+                                        doc.body()
+                                    }
+
+                                    val js1 = "javascript:(function(){document.getElementsByClassName('button')[1].click();})()"
+
+                                    binding.mainWebView.evaluateJavascript(js1) {
+                                        currentState = OrderState.CHECKOUT_STATE
+                                    }
+
+                                }
+                            }
+                            OrderState.ITEM_IN_BASKET_STATE -> {
+
+                            }
+                            OrderState.CHECKOUT_STATE -> {
+
+                            }
+                            else -> {
+
+                            }
+                        }
+
+                        return
+                    }
+
+                    if (urlPage.endsWith("checkout")) {
+                        //val js1 = "javascript:(function(){document.getElementById('order_email').click();})()"
+
+                        //binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
+
+                        //visa american_express master solo paypal
+
+                        //"var frms = document.getElementsByName('loginForm');" +
+                        //            "frms[0].submit(); };");
+
+                        val js = "javascript:" +
+                                "document.getElementById('order_billing_name').value = 'asd';" +
+                                "document.getElementById('credit_card_type').value = 'master';" //+
+//                                "var z = document.getElementById('order_terms');" +
+//                                "z.click();"
+                        binding.mainWebView.evaluateJavascript(js) {
+
+                        }
+
+                    }
+                }
+
 
                 //todo save state depends on finished url
             }
@@ -71,14 +131,16 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
             }
             filteredChildren?.let {
                 //беру первую шмотку рандомного цвета
-                val href = filteredChildren[0].child(0).child(0).attr("href")
+                clothHref = filteredChildren[0].child(0).child(0).attr("href")
                 CoroutineScope(Dispatchers.Main).launch {
-                    binding.mainWebView.loadUrl("https://www.supremenewyork.com$href")
+                    binding.mainWebView.loadUrl("https://www.supremenewyork.com$clothHref")
                 }
 
                 //берем элементы страницы конкретной шмотки
-                val doc1 = Jsoup.connect("https://www.supremenewyork.com$href").get()
+                val doc1 = Jsoup.connect("https://www.supremenewyork.com$clothHref").get()
                 doc1.body()
+                val addHref = doc1.getElementById("cctrl").child(0).attr("action")
+                //Large - 56390
             }
 
             //сделать несколько модов
@@ -86,7 +148,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
             //2)взять конкретный цвет - и взять первый(или рандом) цвет такой же шмотки если не солдаут
             //3)взять рандомный цвет
         }
-
 
     }
 }
@@ -97,7 +158,9 @@ internal class MyJavaScriptInterface {
     fun processHTML(html: String) {
         // process the html as needed by the app
         Log.d("asd", "asd")
+        val doc = Jsoup.parse(html)
 
-        //Html.fromHtml(html)
+        //Jsoup.parse(html).getElementById("order_email") находит
+        //Jsoup.parse(html).getElementsByClass("input")
     }
 }
