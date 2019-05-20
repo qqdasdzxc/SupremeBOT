@@ -61,9 +61,30 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
             doc.body()
 
             //todo подумать что лучше - цепать сразу все элементы или пройтись по чайлдам вручную
+            //doc.child(0).child(1).child(2).child(1)
             //doc.getElementsByAttributeValueContaining("class", "turbolink_scroller")
+            //doc.getElementsContainingOwnText("Apple Coaches")
             val scroller = doc.allElements.firstOrNull { it.attributes().get("class") == "turbolink_scroller" }
-            //scroller.hashCode()
+            val filteredChildren = scroller?.children()?.filter { element ->
+                val elementString = element.toString()
+                elementString.contains("Apple") && !elementString.contains("sold out")
+            }
+            filteredChildren?.let {
+                //беру первую шмотку рандомного цвета
+                val href = filteredChildren[0].child(0).child(0).attr("href")
+                CoroutineScope(Dispatchers.Main).launch {
+                    binding.mainWebView.loadUrl("https://www.supremenewyork.com$href")
+                }
+
+                //берем элементы страницы конкретной шмотки
+                val doc1 = Jsoup.connect("https://www.supremenewyork.com$href").get()
+                doc1.body()
+            }
+
+            //сделать несколько модов
+            //1)взять конкретный цвет - и выключиться если цвет солдаут
+            //2)взять конкретный цвет - и взять первый(или рандом) цвет такой же шмотки если не солдаут
+            //3)взять рандомный цвет
         }
 
 
