@@ -50,8 +50,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
                     if (clothHref != null && urlPage.endsWith(clothHref!!)) {
                         when (currentState) {
                             OrderState.SINGLE_ITEM_STATE -> {
-                                val js =
-                                    "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
+                                val js = "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
 
                                 binding.mainWebView.evaluateJavascript(js) {
                                     currentState = OrderState.ITEM_IN_BASKET_STATE
@@ -61,8 +60,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
                                         doc.body()
                                     }
 
-                                    val js1 =
-                                        "javascript:(function(){document.getElementsByClassName('button')[1].click();})()"
+                                    val js1 = "javascript:(function(){document.getElementsByClassName('button')[1].click();})()"
 
                                     binding.mainWebView.evaluateJavascript(js1) {
                                         currentState = OrderState.CHECKOUT_STATE
@@ -91,15 +89,16 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
 
                         //visa american_express master solo paypal
 
-                        val js = "javascript:" +
+                        val js = "javascript:(function(){" +
                                 "document.getElementById('order_billing_name').value = 'asd';" +
                                 "document.getElementById('credit_card_type').value = 'master';" +
                                 "document.getElementById('order_tel').value = '+79374102309';" +
-                                "document.getElementById('order_terms').checked = 'true';"
+                                "document.getElementById('order_terms').checked = 'true';" +
+                                "document.getElementsByClassName('button')[0].click();})()"
 
 
                         binding.mainWebView.evaluateJavascript(js) {
-
+                            binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
                         }
 
                     }
