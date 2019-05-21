@@ -1,7 +1,7 @@
 package ru.qqdasdzxc.supremebot.ui.main.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.webkit.*
@@ -30,7 +30,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
 
     private fun initView() {
         binding.mainWebView.settings.javaScriptEnabled = true
-        binding.mainWebView.settings.domStorageEnabled = true
+        //binding.mainWebView.settings.domStorageEnabled = true
+        binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
         val javasriptInterface = MyJavaScriptInterface()
         binding.mainWebView.addJavascriptInterface(javasriptInterface, "HTMLOUT")
@@ -41,18 +42,17 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
                 return false
             }
 
+            @SuppressLint("RestrictedApi")
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
                 url?.let { urlPage ->
                     if (clothHref != null && urlPage.endsWith(clothHref!!)) {
                         when (currentState) {
-//                            OrderState.SCROLL_ITEMS_STATE -> {
-//                                currentState = OrderState.SINGLE_ITEM_STATE
-//                            }
                             OrderState.SINGLE_ITEM_STATE -> {
-                                val js = "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
-//
+                                val js =
+                                    "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
+
                                 binding.mainWebView.evaluateJavascript(js) {
                                     currentState = OrderState.ITEM_IN_BASKET_STATE
 
@@ -61,7 +61,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
                                         doc.body()
                                     }
 
-                                    val js1 = "javascript:(function(){document.getElementsByClassName('button')[1].click();})()"
+                                    val js1 =
+                                        "javascript:(function(){document.getElementsByClassName('button')[1].click();})()"
 
                                     binding.mainWebView.evaluateJavascript(js1) {
                                         currentState = OrderState.CHECKOUT_STATE
@@ -84,20 +85,19 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
                     }
 
                     if (urlPage.endsWith("checkout")) {
-                        //val js1 = "javascript:(function(){document.getElementById('order_email').click();})()"
 
-                        //binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
+
+//                        binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
 
                         //visa american_express master solo paypal
 
-                        //"var frms = document.getElementsByName('loginForm');" +
-                        //            "frms[0].submit(); };");
-
                         val js = "javascript:" +
                                 "document.getElementById('order_billing_name').value = 'asd';" +
-                                "document.getElementById('credit_card_type').value = 'master';" //+
-//                                "var z = document.getElementById('order_terms');" +
-//                                "z.click();"
+                                "document.getElementById('credit_card_type').value = 'master';" +
+                                "document.getElementById('order_tel').value = '+79374102309';" +
+                                "document.getElementById('order_terms').checked = 'true';"
+
+
                         binding.mainWebView.evaluateJavascript(js) {
 
                         }
