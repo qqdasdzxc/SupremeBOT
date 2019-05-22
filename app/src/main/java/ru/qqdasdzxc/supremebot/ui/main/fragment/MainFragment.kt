@@ -25,6 +25,7 @@ import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT
 import ru.qqdasdzxc.supremebot.utils.Constants.HREF_ATTR
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_ADD_ITEM_TO_BASKET
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_CHECKOUT_FROM_ITEM
+import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
 import ru.qqdasdzxc.supremebot.utils.hide
@@ -54,8 +55,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.testButton.show()
         binding.mainWebView.hide()
         binding.stopButton.hide()
-
-        dropHandler.removeCallbacks(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -91,13 +90,18 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         }
         binding.stopButton.setOnClickListener {
             workingMode = WorkingMode.WAITING
+            dropHandler.removeCallbacks(this)
             setWaitingUIState()
         }
     }
 
     private fun startDropCheckout() {
-        //todo post runnable every second
-        dropHandler.postDelayed(this, 1000)
+        showMessage(R.string.drop_mode_start_working_msg)
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        startWorkingTime = System.currentTimeMillis()
+        startWorkingUI()
+        workingMode = WorkingMode.DROP
+        dropHandler.postDelayed(this, 300)
     }
 
     override fun run() {
@@ -108,7 +112,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
                 val childString = child.toString()
-                //todo set item name
+                //todo get item name
                 childString.contains("Nike Jacket", true) && !childString.contains(SOLD_OUT)
             }
             firstNotSoldChildren?.let {
@@ -182,7 +186,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun getJSToFillCheckoutForm(): String {
         return when (workingMode) {
             WorkingMode.TEST -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
-            WorkingMode.DROP -> ""//todo return js with user info
+            WorkingMode.DROP -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
             WorkingMode.WAITING -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
         }
     }

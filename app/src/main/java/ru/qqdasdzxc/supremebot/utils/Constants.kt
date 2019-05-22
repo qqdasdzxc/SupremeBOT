@@ -18,4 +18,12 @@ object Constants {
             "document.getElementById('credit_card_type').value = 'master';" +
             "document.getElementById('order_terms').checked = 'true';" +
             "document.getElementsByClassName('button')[0].click();})()"
+
+    const val JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE = "javascript:(function(){" +
+            "document.getElementById('order_billing_name').value = 'Dmitr';" +
+            "document.getElementById('order_email').value = 'hook23@mail.ru';" +
+            "document.getElementById('order_tel').value = '+11111111111';" +
+            "document.getElementById('credit_card_type').value = 'master';" +
+            "document.getElementById('order_terms').checked = 'true';" +
+            "document.getElementsByClassName('button')[0].click();})()"
 }
