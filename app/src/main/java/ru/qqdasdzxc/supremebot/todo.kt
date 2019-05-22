@@ -20,6 +20,23 @@ package ru.qqdasdzxc.supremebot
 
 //4) настройка сайза шмотки и сайза кроссовок
 //также несколько модов с предпочтительными сайзами и выключениями
+//<option value='Small'>Small</option>
+//<option value='Medium'>Medium</option>
+//<option value='Large'>Large</option>
+//<option value='X-Large'>X-Large</option>
+//
+//<option value='30'>30</option>
+//<option value='32'>32</option>
+//<option value='34'>34</option>
+//<option value='36'>36</option>
+//
+//<option value='6'>6</option>
+//<option value='7'>7</option>
+//<option value='8'>8</option>
+//<option value='9'>9</option>
+//<option value='10'>10</option>
+//<option value='11'>11</option>
+//<option value='12'>12</option>
 
 //5) настройка адреса и платежа
 //тут вроде все просто
