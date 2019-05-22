@@ -2,108 +2,172 @@ package ru.qqdasdzxc.supremebot.ui.main.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
 import android.view.View
-import android.webkit.*
+import android.webkit.JavascriptInterface
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.data.OrderState
+import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
 import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
+import ru.qqdasdzxc.supremebot.ui.base.HandleBackPressFragment
+import ru.qqdasdzxc.supremebot.utils.Constants.BASE_SUPREME_URL
+import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT
+import ru.qqdasdzxc.supremebot.utils.Constants.HREF_ATTR
+import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_ADD_ITEM_TO_BASKET
+import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_CHECKOUT_FROM_ITEM
+import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
+import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
+import ru.qqdasdzxc.supremebot.utils.TimeConverter
+import ru.qqdasdzxc.supremebot.utils.hide
+import ru.qqdasdzxc.supremebot.utils.show
 
+class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment {
 
-class MainFragment : BaseFragment<FragmentMainViewBinding>() {
-
-    var clothHref: String? = null
-    var currentState = OrderState.SINGLE_ITEM_STATE
+    private var currentClothHref: String? = null
+    private var currentOrderState = OrderState.SINGLE_ITEM_STATE
+    private var workingMode = WorkingMode.WAITING
+    private var startWorkingTime: Long? = null
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
+
+    override fun onBackPress() {
+        if (binding.mainWebView.canGoBack()) {
+            binding.mainWebView.goBack()
+        } else {
+            setWaitingUIState()
+        }
+    }
+
+    private fun setWaitingUIState() {
+        binding.startButton.show()
+        binding.testButton.show()
+        binding.mainWebView.hide()
+        binding.stopButton.hide()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initWebView()
         initView()
-        loadStartPage()
     }
 
-    private fun initView() {
+    private fun initWebView() {
         binding.mainWebView.settings.javaScriptEnabled = true
-        //binding.mainWebView.settings.domStorageEnabled = true
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-
-        val javasriptInterface = MyJavaScriptInterface()
-        binding.mainWebView.addJavascriptInterface(javasriptInterface, "HTMLOUT")
-
+        //binding.mainWebView.settings.domStorageEnabled = true
+//        val javasriptInterface = MyJavaScriptInterface()
+//        binding.mainWebView.addJavascriptInterface(javasriptInterface, "HTMLOUT")
         binding.mainWebView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-
-                return false
-            }
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean = false
 
             @SuppressLint("RestrictedApi")
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
+                processUrl(url)
+            }
+        }
+    }
 
-                if (clothHref != null && url.endsWith(clothHref!!)) {
-                    when (currentState) {
-                        OrderState.SINGLE_ITEM_STATE -> {
-                            val js = "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
+    private fun initView() {
+        binding.testButton.setOnClickListener {
+            startTestCheckout()
+        }
+        binding.startButton.setOnClickListener {
+            //todo start refreshing page and search item
+        }
+        binding.stopButton.setOnClickListener {
+            workingMode = WorkingMode.WAITING
+            setWaitingUIState()
+        }
+    }
 
-                            binding.mainWebView.evaluateJavascript(js) {
-                                currentState = OrderState.ITEM_IN_BASKET_STATE
+    private fun startTestCheckout() {
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        startWorkingTime = System.currentTimeMillis()
+        startWorkingUI()
+        workingMode = WorkingMode.TEST
 
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    val doc = Jsoup.connect(url).get()
-                                    doc.body()
-                                }
+        CoroutineScope(Dispatchers.IO).launch {
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
+            val scroller = pageDocument.child(0).child(1).child(2).child(1)
+            val firstNotSoldChildren = scroller?.children()?.first { child ->
+                !child.toString().contains(SOLD_OUT)
+            }
+            firstNotSoldChildren?.let {
+                currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
+                CoroutineScope(Dispatchers.Main).launch {
+                    binding.mainWebView.loadUrl(BASE_SUPREME_URL + currentClothHref)
+                }
+                return@launch
+            }
 
-                                val js1 = "javascript:(function(){document.getElementsByClassName('button')[1].click();})()"
+            workingMode = WorkingMode.WAITING
+            showMessage(getString(R.string.everything_is_sold_out))
+        }
+    }
 
-                                binding.mainWebView.evaluateJavascript(js1) {
-                                    currentState = OrderState.CHECKOUT_STATE
-                                }
-
-                            }
-                        }
-                        OrderState.ITEM_IN_BASKET_STATE -> {
-
-                        }
-                        OrderState.CHECKOUT_STATE -> {
-
-                        }
-                        else -> {
-
-                        }
-                    }
-
+    private fun processUrl(url: String) {
+        when (workingMode) {
+            WorkingMode.TEST, WorkingMode.DROP -> {
+                if (url.endsWith(currentClothHref!!)) {
+                    binding.mainWebView.show()
+                    getItemAndGoToCheckout()
                     return
                 }
 
-                if (url.endsWith("checkout")) {
-
-
-
-                    val js = "javascript:(function(){" +
-                            "document.getElementById('order_billing_name').value = 'asd';" +
-                            "document.getElementById('credit_card_type').value = 'master';" +
-                            "document.getElementById('order_tel').value = '+79374102309';" +
-                            "document.getElementById('order_terms').checked = 'true';" +
-                            "document.getElementsByClassName('button')[0].click();})()"
-
-
-                    binding.mainWebView.evaluateJavascript(js) {
-                        //binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
-                    }
-
+                if (url.endsWith(CHECKOUT)) {
+                    //Handler().postDelayed({
+                        binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
+                            showMessage(
+                                getString(
+                                    R.string.test_mode_checkout_time_msg,
+                                    TimeConverter.seconds(startWorkingTime!!, System.currentTimeMillis())
+                                )
+                            )
+                        }
+                        workingMode = WorkingMode.WAITING
+                    //},500)
                 }
-
-
-                //todo save state depends on finished url
+            }
+            WorkingMode.WAITING -> {
             }
         }
+    }
+
+    private fun getJSToFillCheckoutForm(): String {
+        return when (workingMode) {
+            WorkingMode.TEST -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
+            WorkingMode.DROP -> ""//todo return js with user info
+            WorkingMode.WAITING -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
+        }
+    }
+
+    private fun getItemAndGoToCheckout() {
+        //may be click first on remove
+        binding.mainWebView.evaluateJavascript(JS_CLICK_ON_ADD_ITEM_TO_BASKET) {
+            currentOrderState = OrderState.ITEM_IN_BASKET_STATE
+
+            Handler().postDelayed({
+                binding.mainWebView.evaluateJavascript(JS_CLICK_ON_CHECKOUT_FROM_ITEM) {
+                    currentOrderState = OrderState.CHECKOUT_STATE
+                }
+            }, 500)
+        }
+    }
+
+    private fun startWorkingUI() {
+        binding.startButton.hide()
+        binding.testButton.hide()
+        binding.stopButton.show()
     }
 
     private fun loadStartPage() {
@@ -112,11 +176,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
             //TODO load start page(1)
             val doc = Jsoup.connect("https://www.supremenewyork.com/shop/all/jackets").get()
 
-            //todo подумать что лучше - цепать сразу все элементы или пройтись по чайлдам вручную
-            //doc.child(0).child(1).child(2).child(1)
-            //doc.getElementsByAttributeValueContaining("class", "turbolink_scroller")
-            //doc.getElementsContainingOwnText("Apple Coaches")
-            //doc.allElements.firstOrNull { it.attributes().get("class") == "turbolink_scroller" }
+
             val scroller = doc.child(0).child(1).child(2).child(1)
             val filteredChildren = scroller?.children()?.filter { element ->
                 val elementString = element.toString()
@@ -126,19 +186,11 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>() {
 
             filteredChildren?.let {
                 //беру первую шмотку рандомного цвета
-                clothHref = filteredChildren[0].child(0).child(0).attr("href")
+                currentClothHref = filteredChildren[0].child(0).child(0).attr("href")
                 CoroutineScope(Dispatchers.Main).launch {
-                    binding.mainWebView.loadUrl("https://www.supremenewyork.com$clothHref")
+                    binding.mainWebView.loadUrl("https://www.supremenewyork.com$currentClothHref")
                 }
-
-                //берем элементы страницы конкретной шмотки
-//                val doc1 = Jsoup.connect("https://www.supremenewyork.com$clothHref").get()
-//                doc1.body()
-//                val addHref = doc1.getElementById("cctrl").child(0).attr("action")
-                //Large - 56390
             }
-
-
         }
     }
 }
@@ -147,11 +199,6 @@ internal class MyJavaScriptInterface {
 
     @JavascriptInterface
     fun processHTML(html: String) {
-        // process the html as needed by the app
-        Log.d("asd", "asd")
         val doc = Jsoup.parse(html)
-
-        //Jsoup.parse(html).getElementById("order_email") находит
-        //Jsoup.parse(html).getElementsByClass("input")
     }
 }

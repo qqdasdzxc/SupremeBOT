@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">SupremeBOT</string>
+
+    <string name="settings">Settings</string>
+
+    <!-- main -->
+    <string name="test">Test checkout</string>
+    <string name="start">Start search</string>
+    <string name="stop">Stop</string>
+
+    <!-- messages -->
+    <string name="everything_is_sold_out">Everything is sold out</string>
+    <string name="test_mode_checkout_time_msg">Test mode: checkout in %s sec.</string>
 </resources>
