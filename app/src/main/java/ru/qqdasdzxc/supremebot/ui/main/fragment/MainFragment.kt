@@ -3,6 +3,7 @@ package ru.qqdasdzxc.supremebot.ui.main.fragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
@@ -10,6 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
@@ -25,16 +27,17 @@ import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_ADD_ITEM_TO_BASKET
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_CHECKOUT_FROM_ITEM
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
-import ru.qqdasdzxc.supremebot.utils.TimeConverter
 import ru.qqdasdzxc.supremebot.utils.hide
 import ru.qqdasdzxc.supremebot.utils.show
 
-class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment {
+class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment, Runnable {
 
     private var currentClothHref: String? = null
     private var currentOrderState = OrderState.SINGLE_ITEM_STATE
     private var workingMode = WorkingMode.WAITING
     private var startWorkingTime: Long? = null
+    private var dropHandler = Handler()
+    private var dropItemFinded = false
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
 
@@ -51,6 +54,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.testButton.show()
         binding.mainWebView.hide()
         binding.stopButton.hide()
+
+        dropHandler.removeCallbacks(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,7 +87,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             startTestCheckout()
         }
         binding.startButton.setOnClickListener {
-            //todo start refreshing page and search item
+            startDropCheckout()
         }
         binding.stopButton.setOnClickListener {
             workingMode = WorkingMode.WAITING
@@ -90,7 +95,43 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         }
     }
 
+    private fun startDropCheckout() {
+        //todo post runnable every second
+        dropHandler.postDelayed(this, 1000)
+    }
+
+    override fun run() {
+        Log.d("drop scan", "started")
+        dropHandler.postDelayed(this, 1000)
+        CoroutineScope(Dispatchers.IO).launch {
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
+            val scroller = pageDocument.child(0).child(1).child(2).child(1)
+            val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
+                val childString = child.toString()
+                //todo set item name
+                childString.contains("Nike Jacket", true) && !childString.contains(SOLD_OUT)
+            }
+            firstNotSoldChildren?.let {
+                currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
+                CoroutineScope(Dispatchers.Main).launch {
+                    //todo set flag item is finded and show message
+                    dropHandler.removeCallbacks(this@MainFragment)
+                    if (!dropItemFinded) {
+                        dropItemFinded = true
+                        binding.mainWebView.loadUrl(BASE_SUPREME_URL + currentClothHref)
+                    }
+
+                }
+                return@launch
+            }
+
+            workingMode = WorkingMode.WAITING
+            showMessage(R.string.did_not_find_an_item)
+        }
+    }
+
     private fun startTestCheckout() {
+        showMessage(R.string.test_mode_start_working_msg)
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         startWorkingTime = System.currentTimeMillis()
         startWorkingUI()
@@ -99,7 +140,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         CoroutineScope(Dispatchers.IO).launch {
             val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
-            val firstNotSoldChildren = scroller?.children()?.first { child ->
+            val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
                 !child.toString().contains(SOLD_OUT)
             }
             firstNotSoldChildren?.let {
@@ -111,7 +152,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             }
 
             workingMode = WorkingMode.WAITING
-            showMessage(getString(R.string.everything_is_sold_out))
+            showMessage(R.string.everything_is_sold_out)
         }
     }
 
@@ -127,12 +168,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                 if (url.endsWith(CHECKOUT)) {
                     //Handler().postDelayed({
                         binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-                            showMessage(
-                                getString(
-                                    R.string.test_mode_checkout_time_msg,
-                                    TimeConverter.seconds(startWorkingTime!!, System.currentTimeMillis())
-                                )
-                            )
+//                            showMessage(getString(R.string.test_mode_checkout_time_msg, TimeConverter.seconds(startWorkingTime!!, System.currentTimeMillis())))
                         }
                         workingMode = WorkingMode.WAITING
                     //},500)
@@ -152,7 +188,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun getItemAndGoToCheckout() {
-        //may be click first on remove
         binding.mainWebView.evaluateJavascript(JS_CLICK_ON_ADD_ITEM_TO_BASKET) {
             currentOrderState = OrderState.ITEM_IN_BASKET_STATE
 
