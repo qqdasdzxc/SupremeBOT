@@ -5,10 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import com.google.android.material.snackbar.Snackbar
 
 abstract class BaseFragment<B : ViewDataBinding> : Fragment() {
     lateinit var binding: B
@@ -21,4 +23,12 @@ abstract class BaseFragment<B : ViewDataBinding> : Fragment() {
 
     @LayoutRes
     abstract fun getLayoutResId(): Int
+
+    fun showMessage(@StringRes messageResId: Int) {
+        showMessage(getString(messageResId))
+    }
+
+    fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
 }
