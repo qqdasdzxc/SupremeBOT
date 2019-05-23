@@ -96,7 +96,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startDropCheckout() {
-        showMessage(R.string.drop_mode_start_working_msg)
+        showMessage(getString(R.string.drop_mode_start_working_msg, "Nike Jacket"))
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         startWorkingTime = System.currentTimeMillis()
         startWorkingUI()
@@ -108,12 +108,13 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         Log.d("drop scan", "started")
         dropHandler.postDelayed(this, 300)
         CoroutineScope(Dispatchers.IO).launch {
-            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
+            //todo - обязательно нужно проставлять тип шмотки, так как через new и all нет названий у элемента
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/new").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
                 val childString = child.toString()
                 //todo get item name key words
-                childString.contains("Nike", true)
+                childString.contains("Hooded", true)
                         && childString.contains("Jacket", true)
                         && !childString.contains(SOLD_OUT)
             }
@@ -126,7 +127,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                         dropItemFinded = true
                         binding.mainWebView.loadUrl(BASE_SUPREME_URL + currentClothHref)
                     }
-
                 }
                 return@launch
             }
@@ -138,13 +138,13 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun startTestCheckout() {
         showMessage(R.string.test_mode_start_working_msg)
-        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/new")
         startWorkingTime = System.currentTimeMillis()
         startWorkingUI()
         workingMode = WorkingMode.TEST
 
         CoroutineScope(Dispatchers.IO).launch {
-            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/new").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
                 !child.toString().contains(SOLD_OUT)
@@ -163,32 +163,35 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun processUrl(url: String) {
-        when (workingMode) {
-            WorkingMode.TEST, WorkingMode.DROP -> {
-                if (url.endsWith(currentClothHref!!)) {
-                    binding.mainWebView.show()
-                    getItemAndGoToCheckout()
-                    return
-                }
+        currentClothHref?.let { clothHref ->
+            when (workingMode) {
+                WorkingMode.TEST, WorkingMode.DROP -> {
+                    if (url.endsWith(clothHref)) {
+                        binding.mainWebView.show()
+                        getItemAndGoToCheckout()
+                        return
+                    }
 
-                if (url.endsWith(CHECKOUT)) {
-                    //Handler().postDelayed({
+                    if (url.endsWith(CHECKOUT)) {
+                        //Handler().postDelayed({
                         binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-//                            showMessage(getString(R.string.test_mode_checkout_time_msg, TimeConverter.seconds(startWorkingTime!!, System.currentTimeMillis())))
+                            //                            showMessage(getString(R.string.test_mode_checkout_time_msg, TimeConverter.seconds(startWorkingTime!!, System.currentTimeMillis())))
                         }
                         workingMode = WorkingMode.WAITING
-                    //},500)
+                        //},500)
+                    }
+                }
+                WorkingMode.WAITING -> {
                 }
             }
-            WorkingMode.WAITING -> {
-            }
         }
+
     }
 
     private fun getJSToFillCheckoutForm(): String {
         return when (workingMode) {
-            WorkingMode.TEST -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
-            WorkingMode.DROP -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
+            WorkingMode.TEST -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
+            WorkingMode.DROP -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
             WorkingMode.WAITING -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
         }
     }

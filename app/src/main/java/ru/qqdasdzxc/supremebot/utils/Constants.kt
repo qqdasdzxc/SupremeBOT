@@ -47,7 +47,3 @@ object Constants {
             "document.getElementById('order_terms').checked = 'true';" +
             "document.getElementsByClassName('button')[0].click();})()"
 }
-
-//5160 0920 3029 9483
-//09/21
-//507
