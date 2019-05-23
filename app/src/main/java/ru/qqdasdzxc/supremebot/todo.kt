@@ -40,7 +40,18 @@ package ru.qqdasdzxc.supremebot
 
 //5) настройка адреса и платежа
 //тут вроде все просто
-//visa american_express master solo paypal
+//visa = Visa american_express = American Express
+//master = Mastercard solo = Solo paypal = Paypal
+//card month: 01 - 12
+//card year: 2019-2029
+//GB = UK //NB = UK(N.IRELAND) //AT = AUSTRIA //BY = BELARUS
+//BE = BELGUIM //BG = BULGARIA //HR = CROATIA //CZ = CZECH REBUBLIC //DK = DENMARK
+//EE = ESTONIA //FI = FINLAND //FR = FRANCE //DE = GERMANY
+//GR = GREECE //HU = HUNGARY //IS = ICELAND //IE = IRELAND //IT = ITALY
+//LV = LATVIA //LT = LITHUANIA //LU = LUXEMBOURG //MC = MONACO
+//NL = NETHERLANDS //NO = NORWAY //PL = POLAND //PT = PORTUGAL
+//RO = ROMANIA //RU = RUSSIA //SK = SLOVAKIA //SI = SLOVENIA
+//ES = SPAIN //SE = SWEDEN //CH = SWITZERLAND //TR = TURKEY
 
 //6) настройка периода рефреша страницы в поиске нужной шмотки
 //возможно стоит делать дефотную настройку
@@ -61,7 +72,7 @@ package ru.qqdasdzxc.supremebot
 // подумать над логином вообщем
 
 
-//ВОПРОСЫ НА ПОДУМАТЬ
+//ПОДУМАТЬ
 //todo подумать что лучше - цепать сразу все элементы или пройтись по чайлдам вручную
 //doc.child(0).child(1).child(2).child(1)
 //doc.getElementsByAttributeValueContaining("class", "turbolink_scroller")

@@ -185,8 +185,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun getJSToFillCheckoutForm(): String {
         return when (workingMode) {
-            WorkingMode.TEST -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
-            WorkingMode.DROP -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
+            WorkingMode.TEST -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
+            WorkingMode.DROP -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
             WorkingMode.WAITING -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
         }
     }
