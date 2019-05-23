@@ -106,14 +106,16 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     override fun run() {
         Log.d("drop scan", "started")
-        dropHandler.postDelayed(this, 1000)
+        dropHandler.postDelayed(this, 300)
         CoroutineScope(Dispatchers.IO).launch {
             val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
                 val childString = child.toString()
-                //todo get item name
-                childString.contains("Nike Jacket", true) && !childString.contains(SOLD_OUT)
+                //todo get item name key words
+                childString.contains("Nike", true)
+                        && childString.contains("Jacket", true)
+                        && !childString.contains(SOLD_OUT)
             }
             firstNotSoldChildren?.let {
                 currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
