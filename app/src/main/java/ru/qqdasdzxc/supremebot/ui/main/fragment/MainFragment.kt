@@ -68,8 +68,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.mainWebView.settings.javaScriptEnabled = true
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         //binding.mainWebView.settings.domStorageEnabled = true
-//        val javasriptInterface = MyJavaScriptInterface()
-//        binding.mainWebView.addJavascriptInterface(javasriptInterface, "HTMLOUT")
+        val javascriptInterface = MyJavaScriptInterface()
+        binding.mainWebView.addJavascriptInterface(javascriptInterface, "HTMLOUT")
         binding.mainWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean = false
 
@@ -138,16 +138,17 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun startTestCheckout() {
         showMessage(R.string.test_mode_start_working_msg)
-        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/new")
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/pants")
         startWorkingTime = System.currentTimeMillis()
         startWorkingUI()
         workingMode = WorkingMode.TEST
 
         CoroutineScope(Dispatchers.IO).launch {
-            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/new").get()
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/pants").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
-                !child.toString().contains(SOLD_OUT)
+                //!child.toString().contains(SOLD_OUT)
+                child.toString().contains("GORE-TEX")
             }
             firstNotSoldChildren?.let {
                 currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
@@ -168,7 +169,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                 WorkingMode.TEST, WorkingMode.DROP -> {
                     if (url.endsWith(clothHref)) {
                         binding.mainWebView.show()
-                        getItemAndGoToCheckout()
+                        binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
+                        //getItemAndGoToCheckout()
                         return
                     }
 
