@@ -20,14 +20,16 @@ package ru.qqdasdzxc.supremebot
 
 //4) настройка сайза шмотки и сайза кроссовок
 //также несколько модов с предпочтительными сайзами и выключениями
-//TODO поработать с сайзами, потому что value в селектах динамические,
-//TODO возможно как-то с элементе посмотреть сначала нейм потом велью
+
+//TODO надо делать так - в странице шмотки есть ТОЛЬКО НЕ СОЛДАУТ сайзы, нужно доставать велью желаемого на основе профиля пользователя
+//Jsoup.parse(html).getElementById("size")
 //<option value='Small'>Small</option>
 //<option value='Medium'>Medium</option>
 //<option value='Large'>Large</option>
 //<option value='X-Large'>X-Large</option>
 //
 //сайзы шорт, у штанов сайзы как у обычной одежды
+//ахахах нет, у разных штанов могут быть разные размерные сетки - и 30-36 и s-xl
 //<option value='30'>30</option>
 //<option value='32'>32</option>
 //<option value='34'>34</option>
