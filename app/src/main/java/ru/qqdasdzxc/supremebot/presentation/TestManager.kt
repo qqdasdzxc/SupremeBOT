@@ -17,15 +17,6 @@ class TestManager {
     private val messagesLiveData = MutableLiveData<Int>()
     private val workingModeLiveData = MutableLiveData<WorkingMode>()
     private val findedClothHrefLiveData = MutableLiveData<String>()
-    private val sizeValueLiveData = MutableLiveData<String>()
-    //private val isClothLoadedOnUILiveData = MutableLiveData<Boolean>()
-
-    //private var combinedSizeLiveData = MutableLiveData<Pair<String, Boolean>>()
-
-//    init {
-//        isClothLoadedOnUILiveData.postValue(false)
-//        combinedSizeLiveData = zipLiveData(sizeValueLiveData, isClothLoadedOnUILiveData)
-//    }
 
     fun startSearchingItem() {
         messagesLiveData.postValue(R.string.test_mode_start_working_msg)
@@ -39,7 +30,6 @@ class TestManager {
             }
             firstNotSoldChildren?.let {
                 val clothFullHref = BASE_SUPREME_URL + it.child(0).child(0).attr(HREF_ATTR)
-                //startLoadingItemPage(clothFullHref)
                 findedClothHrefLiveData.postValue(clothFullHref)
                 return@launch
             }
@@ -49,42 +39,9 @@ class TestManager {
         }
     }
 
-    //no need to test mode function, in test pick first available size
-//    private fun startLoadingItemPage(clothFullHref: String) {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            //по сути порядок в списке и есть приоритет
-//            val neededSizes = listOf("Medium", "Small")
-//            val pageDocument = Jsoup.connect(clothFullHref).get()
-//            val availableSizes = pageDocument.getElementById("size").children()
-//            for (neededSize in neededSizes) {
-//                val filteredSize = availableSizes.firstOrNull {
-//                    it.toString().contains(neededSize)
-//                }
-//                filteredSize?.let {
-//                    sizeValueLiveData.postValue(it.attr("value"))
-//                    return@launch
-//                }
-//            }
-//
-//            messagesLiveData.postValue(R.string.needed_sizes_sold_out_msg)
-//        }
-//    }
-
     fun getMessagesLiveData(): LiveData<Int> = messagesLiveData
 
     fun getWorkingModelLiveData(): LiveData<WorkingMode> = workingModeLiveData
 
     fun getClothHrefLiveData(): LiveData<String> = findedClothHrefLiveData
-
-//    fun getSizeValueLiveData(): LiveData<String?> = Transformations.map(combinedSizeLiveData) {
-//        if (it.second) {
-//            return@map it.first
-//        } else {
-//            return@map null
-//        }
-//    }
-
-//    fun setItemPageLoaded() {
-//        isClothLoadedOnUILiveData.postValue(true)
-//    }
 }

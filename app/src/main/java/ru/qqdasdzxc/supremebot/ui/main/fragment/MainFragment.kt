@@ -17,6 +17,7 @@ import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.data.dto.UserProfile
 import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
 import ru.qqdasdzxc.supremebot.domain.RoomClient
+import ru.qqdasdzxc.supremebot.presentation.DropManager
 import ru.qqdasdzxc.supremebot.presentation.TestManager
 import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
 import ru.qqdasdzxc.supremebot.ui.base.HandleBackPressFragment
@@ -42,7 +43,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private lateinit var testManager: TestManager
     private var dropItemFound = false
     private val roomClient = RoomClient()
-    private lateinit var userProfile: UserProfile
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
 
@@ -71,8 +71,15 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        loadUserProfile()
         initWebView()
         initView()
+    }
+
+    private fun loadUserProfile() {
+        roomClient.getUserProfile().observe(this, Observer {
+            DropManager.userProfile = it
+        })
     }
 
     private fun initView() {
@@ -124,21 +131,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             return
         }
         if (pageUrl.endsWith(CHECKOUT)) {
-            //binding.mainWebView.settings.blockNetworkImage = false
             fillFormAndProcess()
         }
-    }
-
-    private fun startDropCheckout() {
-        roomClient.getUserProfile().observe(this, Observer {
-            userProfile = it
-        })
-        showMessage(R.string.drop_mode_start_working_msg)
-        binding.mainWebView.loadUrl("javascript:document.open();document.close();")
-        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
-        setWorkingUIState()
-        workingMode = WorkingMode.DROP
-        dropHandler.postDelayed(this, 300)
     }
 
     private fun startTestCheckout() {
@@ -163,6 +157,16 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 //
 //            }
 //        })
+    }
+
+    private fun startDropCheckout() {
+        binding.mainWebView.loadUrl("javascript:document.open();document.close();")
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        setWorkingUIState()
+        workingMode = WorkingMode.DROP
+        dropHandler.postDelayed(this, 300)
+
+        //todo observe drop manager live data
     }
 
     private fun getItemAndGoToCheckout() {
@@ -197,34 +201,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     override fun run() {
-        Log.d("drop scan", "started")
+        val dropManager = DropManager()
+        dropManager.startSearchingItem()
         dropHandler.postDelayed(this, 300)
-        CoroutineScope(Dispatchers.IO).launch {
-            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all/${userProfile.itemTypeValue}").get()
-            val scroller = pageDocument.child(0).child(1).child(2).child(1)
-            val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
-                val childString = child.toString()
-                //здесь же можно проверить и на название цвета
-                userProfile.validateItemName(childString)
-                        && !childString.contains(SOLD_OUT)
-            }
-            firstNotSoldChildren?.let {
-                currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
-                CoroutineScope(Dispatchers.Main).launch {
-                    dropHandler.removeCallbacks(this@MainFragment)
-                    if (!dropItemFound) {
-                        dropItemFound = true
-                        //todo show message item is finded + item title
-                        //startLoadingItemPage(clothFullHref)
-                        binding.mainWebView.loadUrl(BASE_SUPREME_URL + currentClothHref)
-                    }
-                }
-                return@launch
-            }
-
-            workingMode = WorkingMode.WAITING
-            showMessage(R.string.did_not_find_an_item)
-        }
     }
 
 }
