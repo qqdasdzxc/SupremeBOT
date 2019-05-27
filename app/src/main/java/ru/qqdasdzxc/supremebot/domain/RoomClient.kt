@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.qqdasdzxc.supremebot.App
 import ru.qqdasdzxc.supremebot.data.dto.UserProfile
 
 class RoomClient {

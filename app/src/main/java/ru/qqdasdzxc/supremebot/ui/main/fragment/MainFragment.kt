@@ -3,25 +3,34 @@ package ru.qqdasdzxc.supremebot.ui.main.fragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.webkit.*
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.data.WorkingMode
+import ru.qqdasdzxc.supremebot.data.dto.UserProfile
 import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
+import ru.qqdasdzxc.supremebot.domain.RoomClient
 import ru.qqdasdzxc.supremebot.presentation.TestManager
 import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
 import ru.qqdasdzxc.supremebot.ui.base.HandleBackPressFragment
+import ru.qqdasdzxc.supremebot.utils.Constants.BASE_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT_SUPREME_URL
+import ru.qqdasdzxc.supremebot.utils.Constants.HREF_ATTR
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_ADD_ITEM_TO_BASKET
-import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_PROCESS_TEST_MODE
-import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
+import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_PROCESS
+import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_DROP_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
-import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE_WITHOUT_CLICK
+import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_TEST_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.MOBILE
+import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
 import ru.qqdasdzxc.supremebot.utils.hide
 import ru.qqdasdzxc.supremebot.utils.show
 
@@ -30,7 +39,10 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private var currentClothHref: String? = null
     private var workingMode = WorkingMode.WAITING
     private var dropHandler = Handler()
-    private var testManager: TestManager? = null
+    private lateinit var testManager: TestManager
+    private var dropItemFound = false
+    private val roomClient = RoomClient()
+    private lateinit var userProfile: UserProfile
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
 
@@ -86,8 +98,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         //binding.mainWebView.settings.blockNetworkImage = true
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         //binding.mainWebView.settings.domStorageEnabled = true
-        val javascriptInterface = MyJavaScriptInterface()
-        binding.mainWebView.addJavascriptInterface(javascriptInterface, "HTMLOUT")
+//        val javascriptInterface = MyJavaScriptInterface()
+//        binding.mainWebView.addJavascriptInterface(javascriptInterface, "HTMLOUT")
         binding.mainWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean = false
 
@@ -118,7 +130,15 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startDropCheckout() {
-
+        roomClient.getUserProfile().observe(this, Observer {
+            userProfile = it
+        })
+        showMessage(R.string.drop_mode_start_working_msg)
+        binding.mainWebView.loadUrl("javascript:document.open();document.close();")
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        setWorkingUIState()
+        workingMode = WorkingMode.DROP
+        dropHandler.postDelayed(this, 300)
     }
 
     private fun startTestCheckout() {
@@ -126,11 +146,11 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         testManager = TestManager()
-        testManager!!.startSearchingItem()
+        testManager.startSearchingItem()
 
-        testManager!!.getMessagesLiveData().observe(this, Observer { showMessage(it) })
-        testManager!!.getWorkingModelLiveData().observe(this, Observer { workingMode = it })
-        testManager!!.getClothHrefLiveData().observe(this, Observer {
+        testManager.getMessagesLiveData().observe(this, Observer { showMessage(it) })
+        testManager.getWorkingModelLiveData().observe(this, Observer { workingMode = it })
+        testManager.getClothHrefLiveData().observe(this, Observer {
             currentClothHref = it
             binding.mainWebView.loadUrl(it)
         })
@@ -154,18 +174,15 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun fillFormAndProcess() {
-        //binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
-
-        //todo check if name is const c-94s40exc78vk - no it is not
-        //Jsoup.parse(html).getElementsByTag("iframe")[2] - recaptcha element
-
         Handler().postDelayed({
             binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-                workingMode = WorkingMode.WAITING
                 Handler().postDelayed({
-                    binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS_TEST_MODE) {
+                    if (workingMode == WorkingMode.TEST) {
                         showMessage(R.string.test_mode_end_msg)
                     }
+                    binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
+
+                    workingMode = WorkingMode.WAITING
                 }, 200)
             }
         }, 1000)
@@ -173,123 +190,50 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun getJSToFillCheckoutForm(): String {
         return when (workingMode) {
-            WorkingMode.TEST -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE_WITHOUT_CLICK
-            WorkingMode.DROP -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE
+            WorkingMode.TEST -> JS_FILL_FORM_TEST_MODE
+            WorkingMode.DROP -> JS_FILL_FORM_DROP_MODE
             WorkingMode.WAITING -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
         }
     }
 
     override fun run() {
+        Log.d("drop scan", "started")
+        dropHandler.postDelayed(this, 300)
+        CoroutineScope(Dispatchers.IO).launch {
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all/${userProfile.itemTypeValue}").get()
+            val scroller = pageDocument.child(0).child(1).child(2).child(1)
+            val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
+                val childString = child.toString()
+                //здесь же можно проверить и на название цвета
+                userProfile.validateItemName(childString)
+                        && !childString.contains(SOLD_OUT)
+            }
+            firstNotSoldChildren?.let {
+                currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
+                CoroutineScope(Dispatchers.Main).launch {
+                    dropHandler.removeCallbacks(this@MainFragment)
+                    if (!dropItemFound) {
+                        dropItemFound = true
+                        //todo show message item is finded + item title
+                        //startLoadingItemPage(clothFullHref)
+                        binding.mainWebView.loadUrl(BASE_SUPREME_URL + currentClothHref)
+                    }
+                }
+                return@launch
+            }
 
+            workingMode = WorkingMode.WAITING
+            showMessage(R.string.did_not_find_an_item)
+        }
     }
 
-    //    private fun startDropCheckout() {
-//        showMessage(getString(R.string.drop_mode_start_working_msg, "Nike Jacket"))
-//        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
-//        startWorkingTime = System.currentTimeMillis()
-//        setWorkingUIState()
-//        workingMode = WorkingMode.DROP
-//        dropHandler.postDelayed(this, 300)
-//    }
-//
-//    override fun run() {
-//        Log.d("drop scan", "started")
-//        dropHandler.postDelayed(this, 300)
-//        CoroutineScope(Dispatchers.IO).launch {
-//            //todo - обязательно нужно проставлять тип шмотки, так как через new и all нет названий у элемента
-//            //проставлять через /all/
-//            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/new").get()
-//            val scroller = pageDocument.child(0).child(1).child(2).child(1)
-//            val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
-//                val childString = child.toString()
-//                //todo get item name key words
-//                childString.contains("Hooded", true)
-//                        && childString.contains("Jacket", true)
-//                        && !childString.contains(SOLD_OUT)
-//            }
-//            firstNotSoldChildren?.let {
-//                currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    //todo set flag item is finded and show message
-//                    dropHandler.removeCallbacks(this@MainFragment)
-//                    if (!dropItemFinded) {
-//                        dropItemFinded = true
-//                        binding.mainWebView.loadUrl(BASE_SUPREME_URL + currentClothHref)
-//                    }
-//                }
-//                return@launch
-//            }
-//
-//            workingMode = WorkingMode.WAITING
-//            showMessage(R.string.did_not_find_an_item)
-//        }
-//    }
-//
-//    private fun startTestCheckout() {
-//        showMessage(R.string.test_mode_start_working_msg)
-//        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
-//        startWorkingTime = System.currentTimeMillis()
-//        setWorkingUIState()
-//        workingMode = WorkingMode.TEST
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all/pants").get()
-//            val scroller = pageDocument.child(0).child(1).child(2).child(1)
-//            val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
-//                //!child.toString().contains(SOLD_OUT)
-//                child.toString().contains("GORE-TEX")
-//            }
-//            firstNotSoldChildren?.let {
-//                currentClothHref = it.child(0).child(0).attr(HREF_ATTR)
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    binding.mainWebView.loadUrl(BASE_SUPREME_URL + currentClothHref)
-//                }
-//                return@launch
-//            }
-//
-//            workingMode = WorkingMode.WAITING
-//            showMessage(R.string.everything_is_sold_out)
-//        }
-//    }
-//
-//    private fun processUrl(url: String) {
-//        currentClothHref?.let { clothHref ->
-//            when (workingMode) {
-//                WorkingMode.TEST, WorkingMode.DROP -> {
-//                    if (url.endsWith(clothHref)) {
-//                        binding.mainWebView.show()
-//                        binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
-//                        var jsSize = "javascript:(function(){" +
-//                                "var sizeValue = document.getElementsContainingOwnText('Medium')[0].attr('value');" +
-//                                "document.getElementById('size').value = 'sizeValue';})()"
-//                        binding.mainWebView.evaluateJavascript(jsSize) {}
-//                        //getItemAndGoToCheckout()
-//                        return
-//                    }
-//
-//                    if (url.endsWith(CHECKOUT)) {
-//                        //Handler().postDelayed({
-//                        binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-//                            //                            showMessage(getString(R.string.test_mode_checkout_time_msg, TimeConverter.seconds(startWorkingTime!!, System.currentTimeMillis())))
-//                        }
-//                        workingMode = WorkingMode.WAITING
-//                        //},500)
-//                    }
-//                }
-//                WorkingMode.WAITING -> {
-//                }
-//            }
-//        }
-//
-//    }
-//
 }
 
 //binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
-internal class MyJavaScriptInterface {
-
-    @JavascriptInterface
-    fun processHTML(html: String) {
-        val doc = Jsoup.parse(html)
-    }
-}
+//internal class MyJavaScriptInterface {
+//
+//    @JavascriptInterface
+//    fun processHTML(html: String) {
+//        val doc = Jsoup.parse(html)
+//    }
+//}

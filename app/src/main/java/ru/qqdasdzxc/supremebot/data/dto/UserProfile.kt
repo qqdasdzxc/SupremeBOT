@@ -32,4 +32,14 @@ data class UserProfile (
     var cardMonthValue: String? = null,
     var cardYearValue: String? = null,
     var cardCVV: String? = null
-)
+) {
+    fun validateItemName(childString: String): Boolean {
+        if (itemTitleKeyWords == null) return false
+
+        for (keyword in itemTitleKeyWords!!) {
+            if (!childString.contains(keyword, true)) return false
+        }
+
+        return true
+    }
+}

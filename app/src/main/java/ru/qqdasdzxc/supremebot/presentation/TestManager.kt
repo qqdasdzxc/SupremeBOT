@@ -32,12 +32,10 @@ class TestManager {
         workingModeLiveData.postValue(WorkingMode.TEST)
 
         CoroutineScope(Dispatchers.IO).launch {
-            //todo set all
-            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all/pants").get()
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
                 !child.toString().contains(SOLD_OUT)
-                //здесь же можно проверить и на название цвета
             }
             firstNotSoldChildren?.let {
                 val clothFullHref = BASE_SUPREME_URL + it.child(0).child(0).attr(HREF_ATTR)

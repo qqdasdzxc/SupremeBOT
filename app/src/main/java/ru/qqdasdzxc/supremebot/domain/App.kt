@@ -1,4 +1,4 @@
-package ru.qqdasdzxc.supremebot
+package ru.qqdasdzxc.supremebot.domain
 
 import android.app.Application
 import androidx.room.Room

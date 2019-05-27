@@ -31,7 +31,7 @@ object Constants {
             "document.getElementById('order_terms').checked = 'true';" +
             "document.getElementsByClassName('button')[0].click();})()"
 
-    const val JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE_WITHOUT_CLICK = "javascript:" +
+    const val JS_FILL_FORM_TEST_MODE = "javascript:" +
             "document.getElementById('order_billing_name').value = 'Harry Potter';" +
             "document.getElementById('order_email').value = 'harry_potter@gmail.com';" +
             "document.getElementById('order_tel').value = '+11111111111';" +
@@ -48,9 +48,9 @@ object Constants {
             "document.getElementById('vval').value = '111';" +
             "document.getElementById('order_terms').checked = 'true';"
 
-    const val JS_CLICK_ON_PROCESS_TEST_MODE = "javascript:(function(){document.getElementsByClassName('button')[0].click();})()"
+    const val JS_CLICK_ON_PROCESS = "javascript:(function(){document.getElementsByClassName('button')[0].click();})()"
 
-    const val JS_FILL_FORM_AND_CLICK_ON_PROCESS_DROP_MODE = "javascript:(function(){" +
+    const val JS_FILL_FORM_DROP_MODE = "javascript:(function(){" +
             "document.getElementById('order_billing_name').value = 'Dmitriy Kuzmin';" +
             "document.getElementById('order_email').value = 'hook23@mail.ru';" +
             "document.getElementById('order_tel').value = '+79374102309';" +
