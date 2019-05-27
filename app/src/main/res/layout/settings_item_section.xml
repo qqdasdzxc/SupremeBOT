@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/item_type_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Item type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/item_type_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_type_label"/>
+
+        <TextView
+                android:id="@+id/item_key_words_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Item name key words"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_type_spinner"/>
+
+        <ImageView
+                android:id="@+id/item_key_words_add_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_add"
+                app:layout_constraintStart_toEndOf="@id/item_key_words_label"
+                app:layout_constraintTop_toBottomOf="@id/item_type_spinner"
+                tools:ignore="ContentDescription"/>
+
+        <com.google.android.material.chip.ChipGroup
+                android:id="@+id/item_key_words_group_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:chipSpacing="@dimen/top_bottom_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_key_words_label"/>
+
+        <TextView
+                android:id="@+id/item_color_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Item color"
+                android:layout_marginTop="@dimen/start_end_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_key_words_group_view"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/item_color_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Color name"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/item_color_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/random_color_switch_view">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/item_color_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/random_color_switch_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Random color"
+                android:layout_marginStart="@dimen/start_end_margin"
+                app:layout_constraintTop_toTopOf="@id/item_color_wrapper_view"
+                app:layout_constraintBottom_toBottomOf="@id/item_color_wrapper_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/item_color_wrapper_view"/>
+
+        <TextView
+                android:id="@+id/item_size_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Item size"
+                android:layout_marginTop="@dimen/start_end_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_color_wrapper_view"/>
+
+        <ImageView
+                android:id="@+id/item_size_add_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_add"
+                app:layout_constraintStart_toEndOf="@id/item_size_label"
+                app:layout_constraintTop_toBottomOf="@id/item_color_wrapper_view"
+                tools:ignore="ContentDescription"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

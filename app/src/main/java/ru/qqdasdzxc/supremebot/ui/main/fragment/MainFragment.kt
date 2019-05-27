@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.webkit.JavascriptInterface
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.Runnable
 import org.jsoup.Jsoup
@@ -69,6 +66,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun initView() {
+        binding.mainSettingsView.setOnClickListener {
+            navController.navigate(R.id.settings_fragment)
+        }
         binding.testButton.setOnClickListener {
             startTestCheckout()
         }
@@ -84,6 +84,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun initWebView() {
         binding.mainWebView.settings.javaScriptEnabled = true
+        //binding.mainWebView.getSettings().setBlockNetworkLoads(true);
+        //binding.mainWebView.settings.blockNetworkImage = true
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         //binding.mainWebView.settings.domStorageEnabled = true
         val javascriptInterface = MyJavaScriptInterface()
@@ -112,6 +114,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             return
         }
         if (pageUrl.endsWith(CHECKOUT)) {
+            //binding.mainWebView.settings.blockNetworkImage = false
             fillFormAndProcess()
         }
     }
