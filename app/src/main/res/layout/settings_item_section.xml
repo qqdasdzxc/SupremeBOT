@@ -10,25 +10,39 @@
             android:layout_height="wrap_content">
 
         <TextView
-                android:id="@+id/item_type_label"
+                android:id="@+id/section_title"
+                style="@style/TitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Item type"
+                android:text="@string/settings_item_section_title"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+                android:id="@+id/item_type_label"
+                style="@style/SubTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_item_type_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/item_type_spinner"
+                app:layout_constraintBottom_toBottomOf="@id/item_type_spinner"/>
 
         <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/item_type_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_type_label"/>
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintStart_toEndOf="@id/item_type_label"
+                app:layout_constraintTop_toBottomOf="@id/section_title"/>
 
         <TextView
                 android:id="@+id/item_key_words_label"
+                style="@style/SubTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Item name key words"
+                android:text="@string/settings_item_title_key_words_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/item_key_words_add_view"
                 app:layout_constraintBottom_toBottomOf="@id/item_key_words_add_view"/>
@@ -38,9 +52,8 @@
                 style="@style/BaseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add"
+                android:text="@string/settings_add_item_title_keyword_action_title"
                 android:layout_marginStart="@dimen/start_end_margin"
-                android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintStart_toEndOf="@id/item_key_words_label"
                 app:layout_constraintTop_toBottomOf="@id/item_type_spinner"
                 tools:ignore="ContentDescription"/>
@@ -55,23 +68,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/item_key_words_label"/>
 
-        <TextView
-                android:id="@+id/item_color_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Item color"
-                android:layout_marginTop="@dimen/start_end_margin"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_key_words_group_view"/>
-
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/item_color_wrapper_view"
                 style="@style/AppTextInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Color name"
+                android:hint="@string/settings_item_color_name_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
-                app:layout_constraintTop_toBottomOf="@id/item_color_label"
+                app:layout_constraintTop_toBottomOf="@id/item_key_words_group_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/random_color_switch_view">
 
@@ -89,7 +93,7 @@
                 android:id="@+id/random_color_switch_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Random color"
+                android:text="@string/settings_item_random_color_switch_title"
                 android:layout_marginStart="@dimen/start_end_margin"
                 app:layout_constraintTop_toTopOf="@id/item_color_wrapper_view"
                 app:layout_constraintBottom_toBottomOf="@id/item_color_wrapper_view"
@@ -98,9 +102,10 @@
 
         <TextView
                 android:id="@+id/item_size_label"
+                style="@style/SubTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Item size"
+                android:text="@string/settings_item_size_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/item_size_edit_view"
                 app:layout_constraintBottom_toBottomOf="@+id/item_size_edit_view"/>
@@ -110,7 +115,7 @@
                 style="@style/BaseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit"
+                android:text="@string/settings_item_size_edit_action_title"
                 android:layout_marginStart="@dimen/start_end_margin"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintStart_toEndOf="@id/item_size_label"

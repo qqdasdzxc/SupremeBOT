@@ -9,14 +9,24 @@
             android:background="@android:color/white"
             android:padding="@dimen/start_end_margin">
 
+        <TextView
+                android:id="@+id/add_key_word_example_view"
+                style="@style/SubTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_key_word_description"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/add_key_word_wrapper_view"
                 style="@style/AppTextInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Key word"
+                android:hint="@string/add_keyword_hint"
+                android:layout_marginTop="@dimen/start_end_margin"
                 android:layout_marginEnd="@dimen/top_bottom_margin"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_key_word_example_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/add_key_word_action_view">
 
@@ -35,9 +45,9 @@
                 style="@style/BaseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="@string/add_keyword_action_title"
+                app:layout_constraintTop_toTopOf="@id/add_key_word_wrapper_view"
+                app:layout_constraintBottom_toBottomOf="@id/add_key_word_wrapper_view"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

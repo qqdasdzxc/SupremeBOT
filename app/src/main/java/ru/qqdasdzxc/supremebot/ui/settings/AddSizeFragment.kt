@@ -9,14 +9,11 @@ import com.google.android.material.chip.Chip
 import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.ui.base.BaseRoundedBottomSheetDialogFragment
 import ru.qqdasdzxc.supremebot.databinding.FragmentAddSizeBinding
+import ru.qqdasdzxc.supremebot.utils.ItemSizes
 
 class AddSizeFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddSizeBinding>() {
 
     private var editMode = EditSizeMode.CLOTH
-
-    private val clothSizes = listOf("Small", "Medium", "Large", "X-Large")
-    //todo узнать линейку сайзов кроссовок суприм
-    private val sneakersSizes = listOf("6US", "7US", "8US", "9US", "10US", "11US", "12US")
 
     private var currentSelectedSizes = mutableListOf<String>()
 
@@ -60,13 +57,13 @@ class AddSizeFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddSizeBind
     }
 
     private fun addClothSizes() {
-        for (size in clothSizes) {
+        for (size in ItemSizes.clothSizes) {
             binding.addSizeGroupView.addView(buildSizeChip(size))
         }
     }
 
     private fun addSneakersSizes() {
-        for (size in sneakersSizes) {
+        for (size in ItemSizes.sneakersSizes) {
             binding.addSizeGroupView.addView(buildSizeChip(size))
         }
     }

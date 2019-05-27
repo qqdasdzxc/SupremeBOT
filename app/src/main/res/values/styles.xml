@@ -28,6 +28,16 @@
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
-    <!--<style name="BaseTextView" parent="Widget.AppCompat.Te"-->
+    <style name="BaseTextView">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TitleTextView" parent="BaseTextView">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="SubTitleTextView" parent="BaseTextView">
+        <item name="android:textSize">16sp</item>
+    </style>
 
 </resources>

@@ -30,8 +30,6 @@ class AddKeyWordFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddKeyWo
     }
 
     private fun initView() {
-//        binding.addKeyWordEditView.performClick()
-
         binding.addKeyWordActionView.setOnClickListener {
             if (!binding.addKeyWordEditView.text.isNullOrEmpty()) {
                 actionOnAddKeyWord?.invoke(binding.addKeyWordEditView.text.toString())

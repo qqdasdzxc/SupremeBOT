@@ -1,61 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data>
 
-    </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:padding="@dimen/start_end_margin">
+            android:layout_height="match_parent">
 
-        <TextView
-                android:id="@+id/add_size_description_view"
-                android:textColor="@color/colorPrimary"
-                android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select needed sizes in order you want to buy\n(ex. 1 - Small 2 - Medium: if Small is sold out, buy Medium)"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:background="@android:color/white"
+                android:padding="@dimen/start_end_margin">
 
-        <TextView
-                android:id="@+id/add_size_order_label_view"
-                android:textColor="@color/colorPrimary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/top_bottom_margin"
-                android:text="Your current size order: "
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/add_size_description_view"/>
+            <TextView
+                    android:id="@+id/add_size_description_view"
+                    style="@style/SubTitleTextView"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_size_description"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView
-                android:id="@+id/add_size_order_value_view"
-                android:textColor="@color/colorPrimary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/top_bottom_margin"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/add_size_order_label_view"/>
+            <TextView
+                    android:id="@+id/add_size_order_label_view"
+                    style="@style/SubTitleTextView"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/top_bottom_margin"
+                    android:text="@string/add_size_current_order_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/add_size_description_view"/>
 
-        <com.google.android.material.chip.ChipGroup
-                android:id="@+id/add_size_group_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/start_end_margin"
-                android:layout_marginEnd="@dimen/start_end_margin"
-                app:chipSpacing="@dimen/top_bottom_margin"
-                app:layout_constraintTop_toBottomOf="@id/add_size_order_value_view"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/add_size_save_view"/>
+            <TextView
+                    android:id="@+id/add_size_order_value_view"
+                    style="@style/SubTitleTextView"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/top_bottom_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/add_size_order_label_view"/>
 
-        <com.google.android.material.button.MaterialButton
-                android:id="@+id/add_size_save_view"
-                style="@style/BaseButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Save"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+            <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/add_size_group_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacing="@dimen/top_bottom_margin"
+                    app:layout_constraintTop_toBottomOf="@id/add_size_order_value_view"
+                    app:layout_constraintStart_toStartOf="parent"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/add_size_save_view"
+                    style="@style/BaseButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/top_bottom_margin"
+                    android:text="@string/add_size_save_action_title"
+                    app:layout_constraintTop_toBottomOf="@id/add_size_group_view"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 </layout>

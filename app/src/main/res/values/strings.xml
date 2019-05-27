@@ -16,4 +16,43 @@
     <string name="drop_mode_start_working_msg">Searching new item: %s</string>
     <string name="needed_sizes_sold_out_msg">Your needed sizes are sold out!</string>
     <string name="test_mode_end_msg">Test mode ended, postcode is not filled specially</string>
+
+    <!-- settings -->
+    <string name="settings_save_action_title">Save</string>
+    <string name="settings_item_section_title">Item section</string>
+    <string name="settings_item_type_title">Type</string>
+    <string name="settings_item_title_key_words_title">Title key words</string>
+    <string name="settings_add_item_title_keyword_action_title">Add</string>
+    <string name="settings_item_color_name_title">Color name</string>
+    <string name="settings_item_random_color_switch_title">Random color</string>
+    <string name="settings_item_size_title">Size</string>
+    <string name="settings_item_size_edit_action_title">Edit</string>
+
+    <string name="settings_billing_shipping_section_title">Billing/shipping section</string>
+    <string name="settings_user_full_name_title">Full name</string>
+    <string name="settings_user_email_title">Email</string>
+    <string name="settings_user_address_title">Address</string>
+    <string name="settings_user_address_2_title">Address 2</string>
+    <string name="settings_user_address_3_title">Address 3</string>
+    <string name="settings_user_city_title">City</string>
+    <string name="settings_user_postcode_title">Postcode</string>
+
+    <string name="settings_payment_section_title">Payment section</string>
+    <string name="settings_payment_card_type_title">Card type</string>
+    <string name="settings_payment_paypal_message">You will be redirected to paypal to process payment</string>
+    <string name="settings_payment_card_number_title">Card number</string>
+    <string name="settings_payment_cvv_title">CVV</string>
+
+    <!-- Bottom fragments -->
+    <string name="add_keyword_hint">Key word</string>
+    <string name="add_keyword_action_title">Add</string>
+    <string name="add_key_word_description">Title key words examples: \'box\', \'logo\', \'tee\'. Enter words one by
+        one.
+    </string>
+    <string name="add_size_description">Select needed sizes in order you want to buy (ex. 1 - Small 2 - Medium: if Small
+        is sold out, buy Medium)
+    </string>
+    <string name="add_size_current_order_title">Your current size order:</string>
+    <string name="add_size_save_action_title">Save</string>
+
 </resources>

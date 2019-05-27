@@ -4,24 +4,37 @@
 
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/credit_card_setion_root_view"
+            android:id="@+id/credit_card_section_root_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
         <TextView
-                android:id="@+id/credit_card_type_label"
+                android:id="@+id/section_title"
+                style="@style/TitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Card type"
+                android:text="@string/settings_payment_section_title"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+                android:id="@+id/credit_card_type_label"
+                style="@style/SubTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_payment_card_type_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/credit_card_type_spinner"
+                app:layout_constraintBottom_toBottomOf="@id/credit_card_type_spinner"/>
 
         <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/credit_card_type_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/credit_card_type_label"/>
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintStart_toEndOf="@id/credit_card_type_label"
+                app:layout_constraintTop_toBottomOf="@id/section_title"/>
 
         <TextView
                 android:id="@+id/paypal_message_text_view"
@@ -29,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 android:visibility="gone"
-                android:text="You will be redirected to paypal to process payment"
+                android:text="@string/settings_payment_paypal_message"
                 app:layout_constraintTop_toBottomOf="@id/credit_card_type_spinner"
                 app:layout_constraintStart_toStartOf="parent"/>
 
@@ -38,7 +51,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Card number"
+                android:hint="@string/settings_payment_card_number_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/credit_card_type_spinner"
                 app:layout_constraintStart_toStartOf="parent">
@@ -75,7 +88,8 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="CVV"
+                android:hint="@string/settings_payment_cvv_title"
+                android:layout_marginTop="@dimen/top_bottom_margin"
                 android:layout_marginStart="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/credit_card_number_wrapper_view"
                 app:layout_constraintStart_toEndOf="@id/credit_card_year_spinner"

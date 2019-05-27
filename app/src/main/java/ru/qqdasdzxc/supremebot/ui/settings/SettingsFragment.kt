@@ -127,14 +127,14 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
         currentSelectedSizes?.let {
             val stringBuilder = StringBuilder()
             currentSelectedSizes.forEachIndexed { index, value ->
-                stringBuilder.append("${index + 1} - $value").append(" ")
+                stringBuilder.append("${index + 1} - $value\n")
             }
             binding.settingsItemSection.itemSizesOrderValueView.text = stringBuilder.toString()
         }
     }
 
     private fun setFieldsForCreditCard(position: Int) {
-        TransitionManager.beginDelayedTransition(binding.settingsCreditCardSection.creditCardSetionRootView)
+        TransitionManager.beginDelayedTransition(binding.settingsCreditCardSection.creditCardSectionRootView)
         if (cardTypesList[position].first == "paypal") {
             binding.settingsCreditCardSection.paypalMessageTextView.visibility = View.VISIBLE
             binding.settingsCreditCardSection.creditCardMonthSpinner.visibility = View.GONE

@@ -7,14 +7,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+        <TextView
+                android:id="@+id/section_title"
+                style="@style/TitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_billing_shipping_section_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/billing_full_name_wrapper_view"
                 style="@style/AppTextInputStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Full name"
+                android:hint="@string/settings_user_full_name_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/section_title"
                 app:layout_constraintStart_toStartOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -32,7 +42,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
+                android:hint="@string/settings_user_email_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/billing_full_name_wrapper_view"
                 app:layout_constraintStart_toStartOf="parent">
@@ -52,7 +62,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Tel"
+                android:hint="settings_user_tel_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/billing_email_wrapper_view"
                 app:layout_constraintStart_toStartOf="parent">
@@ -72,7 +82,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Address"
+                android:hint="@string/settings_user_address_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/billing_tel_wrapper_view"
                 app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +103,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Address 2"
+                android:hint="@string/settings_user_address_2_title"
                 android:layout_marginStart="@dimen/top_bottom_margin"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/billing_tel_wrapper_view"
@@ -115,7 +125,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Address 3"
+                android:hint="@string/settings_user_address_3_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/billing_address_wrapper_view"
                 app:layout_constraintStart_toStartOf="parent">
@@ -135,7 +145,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="City"
+                android:hint="@string/settings_user_city_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/billing_address_3_wrapper_view"
                 app:layout_constraintStart_toStartOf="parent">
@@ -155,7 +165,7 @@
                 style="@style/AppTextInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Postcode"
+                android:hint="@string/settings_user_postcode_title"
                 android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintTop_toBottomOf="@id/billing_city_wrapper_view"
                 app:layout_constraintStart_toStartOf="parent"
