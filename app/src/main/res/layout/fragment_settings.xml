@@ -13,6 +13,15 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/start_end_margin">
 
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/settings_save_view"
+                    style="@style/BaseButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
             <include
                     android:id="@+id/settings_item_section"
                     layout="@layout/settings_item_section"/>

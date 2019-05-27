@@ -30,13 +30,17 @@
                 android:layout_height="wrap_content"
                 android:text="Item name key words"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_type_spinner"/>
+                app:layout_constraintTop_toTopOf="@id/item_key_words_add_view"
+                app:layout_constraintBottom_toBottomOf="@id/item_key_words_add_view"/>
 
-        <ImageView
+        <com.google.android.material.button.MaterialButton
                 android:id="@+id/item_key_words_add_view"
+                style="@style/BaseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_add"
+                android:text="Add"
+                android:layout_marginStart="@dimen/start_end_margin"
+                android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintStart_toEndOf="@id/item_key_words_label"
                 app:layout_constraintTop_toBottomOf="@id/item_type_spinner"
                 tools:ignore="ContentDescription"/>
@@ -97,18 +101,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Item size"
-                android:layout_marginTop="@dimen/start_end_margin"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_color_wrapper_view"/>
+                app:layout_constraintTop_toTopOf="@id/item_size_edit_view"
+                app:layout_constraintBottom_toBottomOf="@+id/item_size_edit_view"/>
 
-        <ImageView
-                android:id="@+id/item_size_add_view"
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/item_size_edit_view"
+                style="@style/BaseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_add"
+                android:text="Edit"
+                android:layout_marginStart="@dimen/start_end_margin"
+                android:layout_marginTop="@dimen/top_bottom_margin"
                 app:layout_constraintStart_toEndOf="@id/item_size_label"
-                app:layout_constraintTop_toBottomOf="@id/item_color_wrapper_view"
-                tools:ignore="ContentDescription"/>
+                app:layout_constraintTop_toBottomOf="@id/item_color_wrapper_view"/>
+
+        <TextView
+                android:id="@+id/item_sizes_order_value_view"
+                android:textColor="@color/colorPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_size_edit_view"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

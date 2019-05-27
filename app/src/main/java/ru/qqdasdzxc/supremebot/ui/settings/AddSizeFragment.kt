@@ -3,6 +3,7 @@ package ru.qqdasdzxc.supremebot.ui.settings
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.chip.Chip
 import ru.qqdasdzxc.supremebot.R
@@ -13,12 +14,13 @@ class AddSizeFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddSizeBind
 
     private var editMode = EditSizeMode.CLOTH
 
-    //todo move out
     private val clothSizes = listOf("Small", "Medium", "Large", "X-Large")
     //todo узнать линейку сайзов кроссовок суприм
     private val sneakersSizes = listOf("6US", "7US", "8US", "9US", "10US", "11US", "12US")
 
-    private var actionOnAddKeyWord: ((String) -> Unit)? = null
+    private var currentSelectedSizes = mutableListOf<String>()
+
+    private var actionOnSave: ((List<String>, EditSizeMode) -> Unit)? = null
 
     override fun getLayoutResId(): Int = R.layout.fragment_add_size
 
@@ -40,8 +42,6 @@ class AddSizeFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddSizeBind
 
     private fun initView() {
         binding.addSizeGroupView.removeAllViews()
-        //todo check edit mode and set all chips from static collections
-        //then check user selections and select needed chips
         when (editMode) {
             EditSizeMode.CLOTH -> {
                 addClothSizes()
@@ -49,6 +49,13 @@ class AddSizeFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddSizeBind
             EditSizeMode.SNEAKERS -> {
                 addSneakersSizes()
             }
+        }
+
+        updateSizesValue()
+
+        binding.addSizeSaveView.setOnClickListener {
+            actionOnSave?.invoke(currentSelectedSizes, editMode)
+            dismiss()
         }
     }
 
@@ -64,24 +71,42 @@ class AddSizeFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddSizeBind
         }
     }
 
+    private fun updateSizesValue() {
+        val stringBuilder = StringBuilder()
+        currentSelectedSizes.forEachIndexed { index, value ->
+            stringBuilder.append("${index + 1} - $value\n")
+        }
+        binding.addSizeOrderValueView.text = stringBuilder.toString()
+    }
+
     private fun buildSizeChip(size: String): View {
         val chip = Chip(context)
         chip.text = size
         chip.checkedIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_clear)
         chip.isCheckable = true
-
-//        chip.setOnCloseIconClickListener {
-//            binding.settingsItemSection.itemKeyWordsGroupView.removeView(chip)
-//        }
+        chip.isChecked = currentSelectedSizes.contains(size)
+        chip.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                currentSelectedSizes.add(size)
+            } else {
+                currentSelectedSizes.remove(size)
+            }
+            updateSizesValue()
+        }
         return chip
     }
 
-    fun setActionAddKeyWord(action: (String) -> Unit) {
-        actionOnAddKeyWord = action
+    fun setActionSave(action: (List<String>, EditSizeMode) -> Unit) {
+        actionOnSave = action
+    }
+
+    fun setCurrentSelectedSizes(sizes: List<String>?) {
+        sizes?.let { currentSelectedSizes = it.toMutableList() }
     }
 
     fun setEditMode(mode: EditSizeMode) {
         editMode = mode
+        currentSelectedSizes.clear()
     }
 
     enum class EditSizeMode {
