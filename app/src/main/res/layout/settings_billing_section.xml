@@ -1,11 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
 
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_full_name_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Full name"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_full_name_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_email_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/billing_full_name_wrapper_view"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_email_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_tel_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tel"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/billing_email_wrapper_view"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_tel_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_address_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/billing_tel_wrapper_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/billing_address_2_wrapper_view">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_address_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_address_2_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Address 2"
+                android:layout_marginStart="@dimen/top_bottom_margin"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/billing_tel_wrapper_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/billing_address_wrapper_view">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_address_2_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_address_3_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address 3"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/billing_address_wrapper_view"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_address_3_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_city_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="City"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/billing_address_3_wrapper_view"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_city_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/billing_postcode_wrapper_view"
+                style="@style/AppTextInputStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Postcode"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                app:layout_constraintTop_toBottomOf="@id/billing_city_wrapper_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/billing_country_spinner">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/billing_postcode_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLength="20"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/billing_country_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/top_bottom_margin"
+                app:layout_constraintStart_toEndOf="@id/billing_postcode_wrapper_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/billing_postcode_wrapper_view"
+                app:layout_constraintBottom_toBottomOf="@id/billing_postcode_wrapper_view"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

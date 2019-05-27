@@ -1,36 +1,24 @@
 package ru.qqdasdzxc.supremebot.ui.settings
 
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.google.android.material.chip.Chip
 import ru.qqdasdzxc.supremebot.R
-import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
 import ru.qqdasdzxc.supremebot.databinding.FragmentSettingsBinding
+import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
+import ru.qqdasdzxc.supremebot.utils.SpinnerValues.billingCountryCodeList
+import ru.qqdasdzxc.supremebot.utils.SpinnerValues.cardMonthsList
+import ru.qqdasdzxc.supremebot.utils.SpinnerValues.cardTypesList
+import ru.qqdasdzxc.supremebot.utils.SpinnerValues.cardYearsList
+import ru.qqdasdzxc.supremebot.utils.SpinnerValues.itemTypesList
 
 class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
 
     private val addKeyWordFragment = AddKeyWordFragment.getInstance()
     private val addSizeFragment = AddSizeFragment.getInstance()
-
-    //todo move out
-    private val itemTypesList = listOf(
-        "Jackets", "Shirts", "Tops/sweaters", "Sweatshirts",
-        "Pants", "Shorts", "Hats", "Bags", "Accessories", "Skate"
-    )
-
-    private val cardTypesList = listOf(
-        Pair("visa", "Visa"),
-        Pair("american_express", "American Express"),
-        Pair("master", "Mastercard"),
-        Pair("solo", "Solo"),
-        Pair("paypal", "Paypal") //todo you will be redirected to paypal to process payment
-    )
-
-    private val cardMonthsList = listOf("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
-    private val cardYearsList =
-        listOf("2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029")
 
     override fun getLayoutResId(): Int = R.layout.fragment_settings
 
@@ -48,7 +36,11 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //todo set add size fragment edit mode
+                    addSizeFragment.setEditMode(
+                        if (itemTypesList[position] == "Accessories")
+                            AddSizeFragment.EditSizeMode.SNEAKERS
+                        else AddSizeFragment.EditSizeMode.CLOTH
+                    )
                 }
             }
 
@@ -71,14 +63,45 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
             addSizeFragment.show(activity!!.supportFragmentManager)
         }
 
-        binding.settingsCreditCardSection.billingCardTypeSpinner.adapter =
-            ArrayAdapter<String>(context!!, android.R.layout.simple_list_item_1, cardTypesList.map { it.second })
+        binding.settingsBillingSection.billingCountrySpinner.adapter =
+            ArrayAdapter<String>(
+                context!!,
+                android.R.layout.simple_list_item_1,
+                billingCountryCodeList.map { it.second })
 
-        binding.settingsCreditCardSection.billingCardMonthSpinner.adapter =
+        binding.settingsCreditCardSection.creditCardTypeSpinner.adapter =
+            ArrayAdapter<String>(context!!, android.R.layout.simple_list_item_1, cardTypesList.map { it.second })
+        binding.settingsCreditCardSection.creditCardTypeSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    setFieldsForCreditCard(position)
+                }
+            }
+
+        binding.settingsCreditCardSection.creditCardMonthSpinner.adapter =
             ArrayAdapter<String>(context!!, android.R.layout.simple_list_item_1, cardMonthsList)
 
-        binding.settingsCreditCardSection.billingCardYearSpinner.adapter =
+        binding.settingsCreditCardSection.creditCardYearSpinner.adapter =
             ArrayAdapter<String>(context!!, android.R.layout.simple_list_item_1, cardYearsList)
+    }
+
+    private fun setFieldsForCreditCard(position: Int) {
+        TransitionManager.beginDelayedTransition(binding.settingsCreditCardSection.creditCardSetionRootView)
+        if (cardTypesList[position].first == "paypal") {
+            binding.settingsCreditCardSection.paypalMessageTextView.visibility = View.VISIBLE
+            binding.settingsCreditCardSection.creditCardMonthSpinner.visibility = View.GONE
+            binding.settingsCreditCardSection.creditCardYearSpinner.visibility = View.GONE
+            binding.settingsCreditCardSection.creditCardCvvWrapperView.visibility = View.GONE
+            binding.settingsCreditCardSection.creditCardNumberWrapperView.visibility = View.GONE
+        } else {
+            binding.settingsCreditCardSection.paypalMessageTextView.visibility = View.GONE
+            binding.settingsCreditCardSection.creditCardMonthSpinner.visibility = View.VISIBLE
+            binding.settingsCreditCardSection.creditCardYearSpinner.visibility = View.VISIBLE
+            binding.settingsCreditCardSection.creditCardCvvWrapperView.visibility = View.VISIBLE
+            binding.settingsCreditCardSection.creditCardNumberWrapperView.visibility = View.VISIBLE
+        }
     }
 
     private fun createKeyWordChip(keyWord: String): Chip {

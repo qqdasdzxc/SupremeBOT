@@ -1,9 +1,7 @@
 package ru.qqdasdzxc.supremebot.presentation
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,7 +11,6 @@ import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.utils.Constants.BASE_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.HREF_ATTR
 import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
-import ru.qqdasdzxc.supremebot.utils.zipLiveData
 
 class TestManager {
 

@@ -41,7 +41,7 @@ dependencies {
     implementation "android.arch.navigation:navigation-fragment:$rootProject.ext.navigationFragmentVersion"
     implementation "android.arch.navigation:navigation-ui:$rootProject.ext.navigationFragmentVersion"
 
-    kapt("androidx.databinding:databinding-compiler:3.4.0", {
+    kapt("androidx.databinding:databinding-compiler:3.4.1", {
         exclude group: 'com.android.support'
     })
 

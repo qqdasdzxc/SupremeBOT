@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import kotlinx.coroutines.Runnable
 import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
-import ru.qqdasdzxc.supremebot.data.OrderState
 import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
 import ru.qqdasdzxc.supremebot.presentation.TestManager
@@ -29,7 +28,6 @@ import ru.qqdasdzxc.supremebot.utils.show
 class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment, Runnable {
 
     private var currentClothHref: String? = null
-    private var currentOrderState = OrderState.SINGLE_ITEM_STATE
     private var workingMode = WorkingMode.WAITING
     private var dropHandler = Handler()
     private var testManager: TestManager? = null
@@ -149,7 +147,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun getItemAndGoToCheckout() {
         binding.mainWebView.evaluateJavascript(JS_CLICK_ON_ADD_ITEM_TO_BASKET) {
-            currentOrderState = OrderState.ITEM_IN_BASKET_STATE
             Handler().postDelayed({
                 binding.mainWebView.loadUrl(CHECKOUT_SUPREME_URL)
             }, 1000)
@@ -157,7 +154,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun fillFormAndProcess() {
-        binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
+        //binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
 
         //todo check if name is const c-94s40exc78vk - no it is not
         //Jsoup.parse(html).getElementsByTag("iframe")[2] - recaptcha element
@@ -286,35 +283,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 //
 //    }
 //
-
-//
-
-//
-
-//
-//    private fun loadStartPage() {
-//        //TODO show loading somehow
-//        CoroutineScope(Dispatchers.IO).launch {
-//            //TODO load startSearchingItem page(1)
-//            val doc = Jsoup.connect("https://www.supremenewyork.com/shop/all/jackets").get()
-//
-//
-//            val scroller = doc.child(0).child(1).child(2).child(1)
-//            val filteredChildren = scroller?.children()?.filter { element ->
-//                val elementString = element.toString()
-//                //todo check name(2) and color(3)
-//                elementString.contains("Apple") && !elementString.contains("sold out")
-//            }
-//
-//            filteredChildren?.let {
-//                //беру первую шмотку рандомного цвета
-//                currentClothHref = filteredChildren[0].child(0).child(0).attr("href")
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    binding.mainWebView.loadUrl("https://www.supremenewyork.com$currentClothHref")
-//                }
-//            }
-//        }
-//    }
 }
 
 //binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")

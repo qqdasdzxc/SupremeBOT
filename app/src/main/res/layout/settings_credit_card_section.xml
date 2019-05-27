@@ -4,11 +4,12 @@
 
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/credit_card_setion_root_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
         <TextView
-                android:id="@+id/billing_card_type_label"
+                android:id="@+id/credit_card_type_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Card type"
@@ -16,24 +17,34 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/billing_card_type_spinner"
+                android:id="@+id/credit_card_type_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/billing_card_type_label"/>
+                app:layout_constraintTop_toBottomOf="@id/credit_card_type_label"/>
+
+        <TextView
+                android:id="@+id/paypal_message_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top_bottom_margin"
+                android:visibility="gone"
+                android:text="You will be redirected to paypal to process payment"
+                app:layout_constraintTop_toBottomOf="@id/credit_card_type_spinner"
+                app:layout_constraintStart_toStartOf="parent"/>
 
         <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/billing_card_number_wrapper_view"
+                android:id="@+id/credit_card_number_wrapper_view"
                 style="@style/AppTextInputStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Card number"
                 android:layout_marginTop="@dimen/top_bottom_margin"
-                app:layout_constraintTop_toBottomOf="@id/billing_card_type_spinner"
+                app:layout_constraintTop_toBottomOf="@id/credit_card_type_spinner"
                 app:layout_constraintStart_toStartOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/billing_card_number_edit_view"
+                    android:id="@+id/credit_card_number_edit_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
@@ -43,38 +54,40 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/billing_card_month_spinner"
+                android:id="@+id/credit_card_month_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/billing_card_number_wrapper_view"/>
+                app:layout_constraintTop_toTopOf="@id/credit_card_cvv_wrapper_view"
+                app:layout_constraintBottom_toBottomOf="@id/credit_card_cvv_wrapper_view"/>
 
         <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/billing_card_year_spinner"
+                android:id="@+id/credit_card_year_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/top_bottom_margin"
-                app:layout_constraintStart_toEndOf="@id/billing_card_month_spinner"
-                app:layout_constraintTop_toBottomOf="@id/billing_card_number_wrapper_view"/>
+                app:layout_constraintStart_toEndOf="@id/credit_card_month_spinner"
+                app:layout_constraintTop_toTopOf="@id/credit_card_cvv_wrapper_view"
+                app:layout_constraintBottom_toBottomOf="@id/credit_card_cvv_wrapper_view"/>
 
         <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/billing_card_cvv_wrapper_view"
+                android:id="@+id/credit_card_cvv_wrapper_view"
                 style="@style/AppTextInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="CVV"
                 android:layout_marginStart="@dimen/top_bottom_margin"
-                app:layout_constraintTop_toBottomOf="@id/billing_card_number_wrapper_view"
-                app:layout_constraintStart_toEndOf="@id/billing_card_year_spinner"
+                app:layout_constraintTop_toBottomOf="@id/credit_card_number_wrapper_view"
+                app:layout_constraintStart_toEndOf="@id/credit_card_year_spinner"
                 app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/billing_card_cvv_edit_view"
+                    android:id="@+id/credit_card_cvv_edit_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
                     android:textColor="@color/colorPrimary"
-                    android:maxLength="20"/>
+                    android:maxLength="5"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
