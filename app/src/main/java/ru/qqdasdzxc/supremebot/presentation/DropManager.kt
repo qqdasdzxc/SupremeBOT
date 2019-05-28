@@ -19,11 +19,12 @@ import ru.qqdasdzxc.supremebot.utils.zipLiveData
 class DropManager {
 
     companion object {
-        lateinit var userProfile: UserProfile
+        var userProfile: UserProfile? = null
         private var itemFounded = false
         val messagesLiveData = MutableLiveData<Int>()
         val workingModeLiveData = MutableLiveData<WorkingMode>()
         val foundedClothHrefLiveData = MutableLiveData<String>()
+        val pickFirstAvailableSize = MutableLiveData<Boolean>()
         private val sizeValueLiveData = MutableLiveData<String>()
         private val isClothLoadedOnUILiveData = MutableLiveData<Boolean>()
         private var combinedSizeLiveData = MutableLiveData<Pair<String, Boolean>>()
@@ -47,32 +48,36 @@ class DropManager {
     }
 
     fun startSearchingItem() {
-        Log.d("drop scan", "started")
-        messagesLiveData.postValue(R.string.drop_mode_start_working_msg)
-        workingModeLiveData.postValue(WorkingMode.DROP)
+        if (userProfile == null) {
+            messagesLiveData.postValue(R.string.user_profile_empty_msg)
+            return
+        }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val pageDocument =
-                Jsoup.connect("https://www.supremenewyork.com/shop/all/${userProfile.itemTypeValue}").get()
-            val scroller = pageDocument.child(0).child(1).child(2).child(1)
-            val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
-                userProfile.validateItemName(child.toString())
-            }
-            firstNotSoldChildren?.let {
-                if (!itemFounded) {
-                    itemFounded = true
-                    val clothFullHref = BASE_SUPREME_URL + it.child(0).child(0).attr(HREF_ATTR)
-                    foundedClothHrefLiveData.postValue(clothFullHref)
+        userProfile?.let {
+            Log.d("drop scan", "started")
+            messagesLiveData.postValue(R.string.drop_mode_start_working_msg)
+            workingModeLiveData.postValue(WorkingMode.DROP)
 
-                    messagesLiveData.postValue(R.string.item_was_found_msg)
-                    startLoadingItemPage(clothFullHref)
+            CoroutineScope(Dispatchers.IO).launch {
+                val pageDocument =
+                    Jsoup.connect("https://www.supremenewyork.com/shop/all/${it.itemTypeValue}").get()
+                val scroller = pageDocument.child(0).child(1).child(2).child(1)
+                val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
+                    it.validateItemName(child.toString())
                 }
+                firstNotSoldChildren?.let {
+                    if (!itemFounded) {
+                        itemFounded = true
+                        val clothFullHref = BASE_SUPREME_URL + it.child(0).child(0).attr(HREF_ATTR)
+                        foundedClothHrefLiveData.postValue(clothFullHref)
 
-                return@launch
+                        messagesLiveData.postValue(R.string.item_was_found_msg)
+                        startLoadingItemPage(clothFullHref)
+                    }
+
+                    return@launch
+                }
             }
-
-//            workingModeLiveData.postValue(WorkingMode.WAITING)
-//            messagesLiveData.postValue(R.string.did_not_find_an_item)
         }
     }
 
@@ -80,9 +85,15 @@ class DropManager {
     private fun startLoadingItemPage(clothFullHref: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val neededSizes =
-                if (userProfile.itemTypeValue == "Accessories") userProfile.itemSneakersNeededSizes else userProfile.itemClothNeededSizes
+                if (userProfile?.itemTypeValue == "Accessories") userProfile?.itemSneakersNeededSizes else userProfile?.itemClothNeededSizes
             val pageDocument = Jsoup.connect(clothFullHref).get()
             val availableSizes = pageDocument.getElementById("size").children()
+
+            if (neededSizes == null) {
+                pickFirstAvailableSize.postValue(true)
+                return@launch
+            }
+
             for (neededSize in neededSizes) {
                 val filteredSize = availableSizes.firstOrNull {
                     it.toString().contains(neededSize)

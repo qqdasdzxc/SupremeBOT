@@ -168,6 +168,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             stopDropSearching()
             binding.mainWebView.loadUrl(it)
         })
+        DropManager.pickFirstAvailableSize.observe(this, Observer {
+            getItemAndGoToCheckout()
+        })
         DropManager.getSizeValueLiveData().observe(this, Observer {
             it?.let { valueSize ->
                 binding.mainWebView.evaluateJavascript("document.getElementById('size').value = $valueSize;") {
