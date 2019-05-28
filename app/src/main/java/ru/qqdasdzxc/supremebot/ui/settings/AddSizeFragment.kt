@@ -79,7 +79,7 @@ class AddSizeFragment : BaseRoundedBottomSheetDialogFragment<FragmentAddSizeBind
     private fun buildSizeChip(size: String): View {
         val chip = Chip(context)
         chip.text = size
-        chip.checkedIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_clear)
+        chip.checkedIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_check)
         chip.isCheckable = true
         chip.isChecked = currentSelectedSizes.contains(size)
         chip.setOnCheckedChangeListener { _, isChecked ->

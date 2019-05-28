@@ -62,7 +62,7 @@
                 android:id="@+id/item_key_words_group_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/top_bottom_margin"
+                android:layout_marginTop="@dimen/start_end_margin"
                 app:chipSpacing="@dimen/top_bottom_margin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
