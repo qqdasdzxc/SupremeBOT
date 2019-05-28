@@ -23,10 +23,9 @@ class DropManager {
         private var itemFounded = false
         val messagesLiveData = MutableLiveData<Int>()
         val workingModeLiveData = MutableLiveData<WorkingMode>()
-        //todo нашлась ссылка на айтем - сразу остановили работу в цикле на ui
         val foundedClothHrefLiveData = MutableLiveData<String>()
-        val sizeValueLiveData = MutableLiveData<String>()
-        val isClothLoadedOnUILiveData = MutableLiveData<Boolean>()
+        private val sizeValueLiveData = MutableLiveData<String>()
+        private val isClothLoadedOnUILiveData = MutableLiveData<Boolean>()
         private var combinedSizeLiveData = MutableLiveData<Pair<String, Boolean>>()
 
         fun getSizeValueLiveData(): LiveData<String?> = Transformations.map(combinedSizeLiveData) {
@@ -35,6 +34,10 @@ class DropManager {
             } else {
                 return@map null
             }
+        }
+
+        fun setItemPageLoaded() {
+            isClothLoadedOnUILiveData.postValue(true)
         }
 
         init {
@@ -53,34 +56,29 @@ class DropManager {
                 Jsoup.connect("https://www.supremenewyork.com/shop/all/${userProfile.itemTypeValue}").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
-                val childString = child.toString()
-                //todo здесь же нужно проверить и на название цвета
-                userProfile.validateItemName(childString)
-                        && !childString.contains(SOLD_OUT)
+                userProfile.validateItemName(child.toString())
             }
-
             firstNotSoldChildren?.let {
                 if (!itemFounded) {
                     itemFounded = true
                     val clothFullHref = BASE_SUPREME_URL + it.child(0).child(0).attr(HREF_ATTR)
                     foundedClothHrefLiveData.postValue(clothFullHref)
 
-                    //todo show message item is finded + item title
+                    messagesLiveData.postValue(R.string.item_was_found_msg)
                     startLoadingItemPage(clothFullHref)
                 }
 
                 return@launch
             }
 
-            workingModeLiveData.postValue(WorkingMode.WAITING)
-            messagesLiveData.postValue(R.string.did_not_find_an_item)
+//            workingModeLiveData.postValue(WorkingMode.WAITING)
+//            messagesLiveData.postValue(R.string.did_not_find_an_item)
         }
     }
 
 
     private fun startLoadingItemPage(clothFullHref: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            //по сути порядок в списке и есть приоритет
             val neededSizes =
                 if (userProfile.itemTypeValue == "Accessories") userProfile.itemSneakersNeededSizes else userProfile.itemClothNeededSizes
             val pageDocument = Jsoup.connect(clothFullHref).get()
@@ -97,11 +95,6 @@ class DropManager {
 
             messagesLiveData.postValue(R.string.needed_sizes_sold_out_msg)
         }
-    }
-
-
-    fun setItemPageLoaded() {
-        isClothLoadedOnUILiveData.postValue(true)
     }
 
 }

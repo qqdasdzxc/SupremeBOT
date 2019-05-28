@@ -2,6 +2,7 @@ package ru.qqdasdzxc.supremebot.data.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
 
 @Entity
 data class UserProfile (
@@ -34,10 +35,18 @@ data class UserProfile (
     var cardCVV: String? = null
 ) {
     fun validateItemName(childString: String): Boolean {
-        if (itemTitleKeyWords == null) return false
+        if (itemTitleKeyWords == null || childString.contains(SOLD_OUT)) return false
 
         for (keyword in itemTitleKeyWords!!) {
             if (!childString.contains(keyword, true)) return false
+        }
+
+        if (isRandomColor) return true
+
+        itemColorName?.let {
+            if (!childString.contains(it, true)) {
+                return false
+            }
         }
 
         return true

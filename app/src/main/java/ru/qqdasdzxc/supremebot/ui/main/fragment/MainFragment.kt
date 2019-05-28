@@ -78,7 +78,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun loadUserProfile() {
         roomClient.getUserProfile().observe(this, Observer {
-            DropManager.userProfile = it
+            it?.let { userProfile ->
+                DropManager.userProfile = userProfile
+            }
         })
     }
 
@@ -94,7 +96,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         }
         binding.stopButton.setOnClickListener {
             workingMode = WorkingMode.WAITING
-            dropHandler.removeCallbacks(this)
+            stopDropSearching()
             setWaitingUIState()
         }
     }
@@ -120,10 +122,12 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun processUrl(pageUrl: String) {
         if (currentClothHref != null && pageUrl.endsWith(currentClothHref!!)) {
-            //send test manager currentClothHref page loaded - no need in test mode
-            //testManager!!.setItemPageLoaded()
-            //todo for test mode evaluate click on add, then click on basket
-            getItemAndGoToCheckout()
+            if (workingMode == WorkingMode.TEST) {
+                getItemAndGoToCheckout()
+            }
+            if (workingMode == WorkingMode.DROP) {
+                DropManager.setItemPageLoaded()
+            }
             return
         }
         if (pageUrl.endsWith(MOBILE)) {
@@ -148,15 +152,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             currentClothHref = it
             binding.mainWebView.loadUrl(it)
         })
-
-//        testManager!!.getSizeValueLiveData().observe(this, Observer {
-//            it?.let { valueSize ->
-//                binding.mainWebView.evaluateJavascript("document.getElementById('size').value = $valueSize;") {
-//                    getItemAndGoToCheckout()
-//                }
-//
-//            }
-//        })
     }
 
     private fun startDropCheckout() {
@@ -166,7 +161,24 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         workingMode = WorkingMode.DROP
         dropHandler.postDelayed(this, 300)
 
-        //todo observe drop manager live data
+        DropManager.messagesLiveData.observe(this, Observer { showMessage(it) })
+        DropManager.workingModeLiveData.observe(this, Observer { workingMode = it })
+        DropManager.foundedClothHrefLiveData.observe(this, Observer {
+            currentClothHref = it
+            stopDropSearching()
+            binding.mainWebView.loadUrl(it)
+        })
+        DropManager.getSizeValueLiveData().observe(this, Observer {
+            it?.let { valueSize ->
+                binding.mainWebView.evaluateJavascript("document.getElementById('size').value = $valueSize;") {
+                    getItemAndGoToCheckout()
+                }
+            }
+        })
+    }
+
+    private fun stopDropSearching() {
+        dropHandler.removeCallbacks(this)
     }
 
     private fun getItemAndGoToCheckout() {
@@ -195,7 +207,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun getJSToFillCheckoutForm(): String {
         return when (workingMode) {
             WorkingMode.TEST -> JS_FILL_FORM_TEST_MODE
-            WorkingMode.DROP -> JS_FILL_FORM_DROP_MODE
+            WorkingMode.DROP -> JS_FILL_FORM_TEST_MODE//JS_FILL_FORM_DROP_MODE
             WorkingMode.WAITING -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
         }
     }

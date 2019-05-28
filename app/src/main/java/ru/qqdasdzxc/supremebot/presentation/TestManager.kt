@@ -16,21 +16,21 @@ class TestManager {
 
     private val messagesLiveData = MutableLiveData<Int>()
     private val workingModeLiveData = MutableLiveData<WorkingMode>()
-    private val findedClothHrefLiveData = MutableLiveData<String>()
+    private val foundedClothHrefLiveData = MutableLiveData<String>()
 
     fun startSearchingItem() {
         messagesLiveData.postValue(R.string.test_mode_start_working_msg)
         workingModeLiveData.postValue(WorkingMode.TEST)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
+            val pageDocument = Jsoup.connect("https://www.supremenewyork.com/shop/all/pants").get()
             val scroller = pageDocument.child(0).child(1).child(2).child(1)
             val firstNotSoldChildren = scroller?.children()?.firstOrNull { child ->
                 !child.toString().contains(SOLD_OUT)
             }
             firstNotSoldChildren?.let {
                 val clothFullHref = BASE_SUPREME_URL + it.child(0).child(0).attr(HREF_ATTR)
-                findedClothHrefLiveData.postValue(clothFullHref)
+                foundedClothHrefLiveData.postValue(clothFullHref)
                 return@launch
             }
 
@@ -43,5 +43,5 @@ class TestManager {
 
     fun getWorkingModelLiveData(): LiveData<WorkingMode> = workingModeLiveData
 
-    fun getClothHrefLiveData(): LiveData<String> = findedClothHrefLiveData
+    fun getClothHrefLiveData(): LiveData<String> = foundedClothHrefLiveData
 }

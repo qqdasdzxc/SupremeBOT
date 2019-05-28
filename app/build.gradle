@@ -6,7 +6,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "hello.supreme.lite"
+        applicationId "ru.qqdasdzxc.supremebot"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
