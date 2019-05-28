@@ -38,11 +38,11 @@ import ru.qqdasdzxc.supremebot.utils.show
 class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment, Runnable {
 
     private var currentClothHref: String? = null
-    private var workingMode = WorkingMode.WAITING
+    private lateinit var workingMode : WorkingMode
     private var dropHandler = Handler()
     private lateinit var testManager: TestManager
-    private var dropItemFound = false
     private val roomClient = RoomClient()
+    private lateinit var userProfile: UserProfile
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
 
@@ -79,6 +79,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun loadUserProfile() {
         roomClient.getUserProfile().observe(this, Observer {
             it?.let { userProfile ->
+                this.userProfile = userProfile
                 DropManager.userProfile = userProfile
             }
         })
@@ -95,7 +96,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             startDropCheckout()
         }
         binding.stopButton.setOnClickListener {
-            workingMode = WorkingMode.WAITING
             stopDropSearching()
             setWaitingUIState()
         }
@@ -103,10 +103,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun initWebView() {
         binding.mainWebView.settings.javaScriptEnabled = true
-        //binding.mainWebView.getSettings().setBlockNetworkLoads(true);
-        //binding.mainWebView.settings.blockNetworkImage = true
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-        //binding.mainWebView.settings.domStorageEnabled = true
 //        val javascriptInterface = MyJavaScriptInterface()
 //        binding.mainWebView.addJavascriptInterface(javascriptInterface, "HTMLOUT")
         binding.mainWebView.webViewClient = object : WebViewClient() {
@@ -155,6 +152,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startDropCheckout() {
+        DropManager.refresh()
+
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
@@ -201,7 +200,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                     }
                     binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
 
-                    workingMode = WorkingMode.WAITING
                 }, 200)
             }
         }, 1000)
@@ -210,8 +208,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun getJSToFillCheckoutForm(): String {
         return when (workingMode) {
             WorkingMode.TEST -> JS_FILL_FORM_TEST_MODE
-            WorkingMode.DROP -> JS_FILL_FORM_TEST_MODE//JS_FILL_FORM_DROP_MODE
-            WorkingMode.WAITING -> JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
+            WorkingMode.DROP -> userProfile.createFillFormJS()
         }
     }
 

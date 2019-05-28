@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hello Supreme Lite</string>
+    <string name="app_name">Hello Supreme</string>
 
     <string name="settings">Settings</string>
 
@@ -33,6 +33,7 @@
     <string name="settings_billing_shipping_section_title">Billing/shipping section</string>
     <string name="settings_user_full_name_title">Full name</string>
     <string name="settings_user_email_title">Email</string>
+    <string name="settings_user_tel_title">Tel</string>
     <string name="settings_user_address_title">Address</string>
     <string name="settings_user_address_2_title">Address 2</string>
     <string name="settings_user_address_3_title">Address 3</string>
@@ -52,7 +53,7 @@
         one.
     </string>
     <string name="add_size_description">Select needed sizes in order you want to buy (ex. 1 - Small 2 - Medium: if Small
-        is sold out, buy Medium)
+        is sold out, buy Medium). If you select nothing, bot will pick first available size!
     </string>
     <string name="add_size_current_order_title">Your current size order:</string>
     <string name="add_size_save_action_title">Save</string>

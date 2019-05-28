@@ -13,7 +13,6 @@ import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.data.dto.UserProfile
 import ru.qqdasdzxc.supremebot.utils.Constants.BASE_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.HREF_ATTR
-import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
 import ru.qqdasdzxc.supremebot.utils.zipLiveData
 
 class DropManager {
@@ -21,12 +20,12 @@ class DropManager {
     companion object {
         var userProfile: UserProfile? = null
         private var itemFounded = false
-        val messagesLiveData = MutableLiveData<Int>()
-        val workingModeLiveData = MutableLiveData<WorkingMode>()
-        val foundedClothHrefLiveData = MutableLiveData<String>()
-        val pickFirstAvailableSize = MutableLiveData<Boolean>()
-        private val sizeValueLiveData = MutableLiveData<String>()
-        private val isClothLoadedOnUILiveData = MutableLiveData<Boolean>()
+        var messagesLiveData = MutableLiveData<Int>()
+        var workingModeLiveData = MutableLiveData<WorkingMode>()
+        var foundedClothHrefLiveData = MutableLiveData<String>()
+        var pickFirstAvailableSize = MutableLiveData<Boolean>()
+        private var sizeValueLiveData = MutableLiveData<String>()
+        private var isClothLoadedOnUILiveData = MutableLiveData<Boolean>()
         private var combinedSizeLiveData = MutableLiveData<Pair<String, Boolean>>()
 
         fun getSizeValueLiveData(): LiveData<String?> = Transformations.map(combinedSizeLiveData) {
@@ -39,6 +38,19 @@ class DropManager {
 
         fun setItemPageLoaded() {
             isClothLoadedOnUILiveData.postValue(true)
+        }
+
+        fun refresh() {
+            itemFounded = false
+            messagesLiveData = MutableLiveData()
+            workingModeLiveData = MutableLiveData()
+            foundedClothHrefLiveData = MutableLiveData()
+            pickFirstAvailableSize = MutableLiveData()
+            sizeValueLiveData = MutableLiveData()
+            isClothLoadedOnUILiveData = MutableLiveData()
+            isClothLoadedOnUILiveData.postValue(false)
+            combinedSizeLiveData = MutableLiveData()
+            combinedSizeLiveData = zipLiveData(sizeValueLiveData, isClothLoadedOnUILiveData)
         }
 
         init {
@@ -74,8 +86,6 @@ class DropManager {
                         messagesLiveData.postValue(R.string.item_was_found_msg)
                         startLoadingItemPage(clothFullHref)
                     }
-
-                    return@launch
                 }
             }
         }
@@ -89,7 +99,7 @@ class DropManager {
             val pageDocument = Jsoup.connect(clothFullHref).get()
             val availableSizes = pageDocument.getElementById("size").children()
 
-            if (neededSizes == null) {
+            if (neededSizes.isNullOrEmpty()) {
                 pickFirstAvailableSize.postValue(true)
                 return@launch
             }

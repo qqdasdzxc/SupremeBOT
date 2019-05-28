@@ -34,7 +34,6 @@ class TestManager {
                 return@launch
             }
 
-            workingModeLiveData.postValue(WorkingMode.WAITING)
             messagesLiveData.postValue(R.string.everything_is_sold_out)
         }
     }

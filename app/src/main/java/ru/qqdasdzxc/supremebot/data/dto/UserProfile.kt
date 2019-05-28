@@ -51,4 +51,21 @@ data class UserProfile (
 
         return true
     }
+
+    fun createFillFormJS(): String = "javascript:" +
+            "document.getElementById('order_billing_name').value = '$userFullName';" +
+            "document.getElementById('order_email').value = '$userEmail';" +
+            "document.getElementById('order_tel').value = '$userTel';" +
+            "document.getElementById('bo').value = '$userAddress';" +
+            "document.getElementById('oba3').value = '$userAddress2';" +
+            "document.getElementById('order_billing_address_3').value = '$userAddress3';" +
+            "document.getElementById('order_billing_city').value = '$userCity';" +
+            "document.getElementById('order_billing_zip').value = '$userPostCode';" +
+            "document.getElementById('order_billing_country').value = '$userCountryCodeValue';" +
+            "document.getElementById('credit_card_type').value = '$cardTypeValue';" +
+            "document.getElementById('cnb').value = '$cardNumber';" +
+            "document.getElementById('credit_card_month').value = '$cardMonthValue';" +
+            "document.getElementById('credit_card_year').value = '$cardYearValue';" +
+            "document.getElementById('vval').value = '$cardCVV';" +
+            "document.getElementById('order_terms').checked = 'true';"
 }
