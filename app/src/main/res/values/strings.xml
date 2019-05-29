@@ -28,6 +28,7 @@
     <string name="settings_item_color_name_title">Color name</string>
     <string name="settings_item_random_color_switch_title">Random color</string>
     <string name="settings_item_size_title">Size</string>
+    <string name="settings_item_one_size_switch_title">One size</string>
     <string name="settings_item_size_edit_action_title">Edit</string>
 
     <string name="settings_billing_shipping_section_title">Billing/shipping section</string>

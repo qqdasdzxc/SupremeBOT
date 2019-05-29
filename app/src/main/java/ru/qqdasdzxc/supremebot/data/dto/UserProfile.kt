@@ -15,6 +15,7 @@ data class UserProfile (
     var isRandomColor: Boolean = false,
     var itemClothNeededSizes: MutableList<String> = mutableListOf(),
     var itemSneakersNeededSizes: MutableList<String> = mutableListOf(),
+    var isOneSize: Boolean = false,
 
     //billing info
     var userFullName: String? = null,

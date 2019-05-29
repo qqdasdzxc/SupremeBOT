@@ -121,6 +121,17 @@
                 app:layout_constraintStart_toEndOf="@id/item_size_label"
                 app:layout_constraintTop_toBottomOf="@id/item_color_wrapper_view"/>
 
+        <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/one_size_switch_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_item_one_size_switch_title"
+                android:layout_marginStart="@dimen/start_end_margin"
+                app:layout_constraintTop_toTopOf="@id/item_size_edit_view"
+                app:layout_constraintBottom_toBottomOf="@id/item_size_edit_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/item_size_edit_view"/>
+
         <TextView
                 android:id="@+id/item_sizes_order_value_view"
                 android:textColor="@color/colorPrimary"

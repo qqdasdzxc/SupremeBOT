@@ -94,6 +94,11 @@ class DropManager {
 
     private fun startLoadingItemPage(clothFullHref: String) {
         CoroutineScope(Dispatchers.IO).launch {
+            if (userProfile!!.isOneSize) {
+                pickFirstAvailableSize.postValue(true)
+                return@launch
+            }
+
             val neededSizes =
                 if (userProfile?.itemTypeValue == "Accessories") userProfile?.itemSneakersNeededSizes else userProfile?.itemClothNeededSizes
             val pageDocument = Jsoup.connect(clothFullHref).get()

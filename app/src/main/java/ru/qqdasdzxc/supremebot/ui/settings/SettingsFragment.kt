@@ -172,6 +172,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
             }
             binding.settingsItemSection.itemColorEditView.setText(userProfile.itemColorName)
             binding.settingsItemSection.randomColorSwitchView.isChecked = userProfile.isRandomColor
+            binding.settingsItemSection.oneSizeSwitchView.isChecked = userProfile.isOneSize
 
             binding.settingsBillingSection.billingFullNameEditView.setText(userProfile.userFullName)
             binding.settingsBillingSection.billingEmailEditView.setText(userProfile.userEmail)
@@ -196,6 +197,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
         userProfile.itemTitleKeyWords = binding.settingsItemSection.itemKeyWordsGroupView.children.map { (it as Chip).text.toString() }.toList()
         userProfile.itemColorName = binding.settingsItemSection.itemColorEditView.text.toString()
         userProfile.isRandomColor = binding.settingsItemSection.randomColorSwitchView.isChecked
+        userProfile.isOneSize = binding.settingsItemSection.oneSizeSwitchView.isChecked
 
         userProfile.userFullName = binding.settingsBillingSection.billingFullNameEditView.text.toString()
         userProfile.userEmail = binding.settingsBillingSection.billingEmailEditView.text.toString()
