@@ -53,7 +53,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (itemTypesList[position] == "Accessories") {
+                    if (itemTypesList[position] == "Shoes") {
                         addSizeFragment.setEditMode(AddSizeFragment.EditSizeMode.SNEAKERS)
                         addSizeFragment.setCurrentSelectedSizes(userProfile.itemSneakersNeededSizes)
                         updateSizesValue(userProfile.itemSneakersNeededSizes)

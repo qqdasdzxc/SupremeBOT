@@ -123,7 +123,7 @@ class DropManager {
             }
 
             val neededSizes =
-                if (userProfile?.itemTypeValue == "Accessories") userProfile?.itemSneakersNeededSizes else userProfile?.itemClothNeededSizes
+                if (userProfile?.itemTypeValue == "Shoes") userProfile?.itemSneakersNeededSizes else userProfile?.itemClothNeededSizes
             val pageDocument = Jsoup.connect(clothFullHref).get()
             val availableSizes = pageDocument.getElementById("size").children()
 

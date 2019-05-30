@@ -4,7 +4,7 @@ object SpinnerValues {
 
     val itemTypesList = listOf(
         "Jackets", "Shirts", "Tops/sweaters", "Sweatshirts",
-        "Pants", "Shorts", "Hats", "Bags", "Accessories", "Skate"
+        "Pants", "Shorts", "Hats", "Bags", "Accessories", "Shoes", "Skate"
     )
 
     val cardTypesList = listOf(
