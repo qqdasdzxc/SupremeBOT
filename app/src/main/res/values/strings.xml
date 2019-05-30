@@ -18,6 +18,7 @@
     <string name="needed_sizes_sold_out_msg">Your needed sizes are sold out!</string>
     <string name="test_mode_end_msg">Test mode ended, postcode is not filled specially</string>
     <string name="user_profile_empty_msg">Set your profile in settings!</string>
+    <string name="checkout_timing_msg">Checkout timing is: %s</string>
 
     <!-- settings -->
     <string name="settings_save_action_title">Save</string>

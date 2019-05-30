@@ -7,11 +7,7 @@ import android.util.Log
 import android.view.View
 import android.webkit.*
 import androidx.lifecycle.Observer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.data.dto.UserProfile
@@ -21,17 +17,12 @@ import ru.qqdasdzxc.supremebot.presentation.DropManager
 import ru.qqdasdzxc.supremebot.presentation.TestManager
 import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
 import ru.qqdasdzxc.supremebot.ui.base.HandleBackPressFragment
-import ru.qqdasdzxc.supremebot.utils.Constants.BASE_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT_SUPREME_URL
-import ru.qqdasdzxc.supremebot.utils.Constants.HREF_ATTR
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_ADD_ITEM_TO_BASKET
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_PROCESS
-import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_DROP_MODE
-import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_AND_CLICK_ON_PROCESS_TEST_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_TEST_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.MOBILE
-import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
 import ru.qqdasdzxc.supremebot.utils.hide
 import ru.qqdasdzxc.supremebot.utils.show
 
@@ -119,7 +110,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun processUrl(pageUrl: String) {
         if (currentClothHref != null && pageUrl.endsWith(currentClothHref!!)) {
+            Log.d("Hello", "UI: process $currentClothHref")
             if (workingMode == WorkingMode.TEST) {
+                Log.d("Hello", "UI: go to checkout in TEST mode")
                 getItemAndGoToCheckout()
             }
             if (workingMode == WorkingMode.DROP) {
@@ -128,10 +121,12 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             return
         }
         if (pageUrl.endsWith(MOBILE)) {
+            Log.d("Hello", "UI: somehow get to mobile page")
             binding.mainWebView.goBack()
             return
         }
         if (pageUrl.endsWith(CHECKOUT)) {
+            Log.d("Hello", "UI: checkout page loaded")
             fillFormAndProcess()
         }
     }
@@ -167,10 +162,12 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             stopDropSearching()
             binding.mainWebView.loadUrl(it)
         })
-        DropManager.pickFirstAvailableSize.observe(this, Observer {
-            getItemAndGoToCheckout()
+        DropManager.getFirstSizeLiveData().observe(this, Observer {
+            it?.let {
+                getItemAndGoToCheckout()
+            }
         })
-        DropManager.getSizeValueLiveData().observe(this, Observer {
+        DropManager.getNeededSizeValueLiveData().observe(this, Observer {
             it?.let { valueSize ->
                 binding.mainWebView.evaluateJavascript("document.getElementById('size').value = $valueSize;") {
                     getItemAndGoToCheckout()
@@ -184,8 +181,10 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun getItemAndGoToCheckout() {
+        Log.d("Hello", "UI: try to click on add to basket button")
         binding.mainWebView.evaluateJavascript(JS_CLICK_ON_ADD_ITEM_TO_BASKET) {
             Handler().postDelayed({
+                Log.d("Hello", "UI: start loading checkout page")
                 binding.mainWebView.loadUrl(CHECKOUT_SUPREME_URL)
             }, 1000)
         }
@@ -193,16 +192,29 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun fillFormAndProcess() {
         Handler().postDelayed({
+            Log.d("Hello", "UI: fill checkout form")
             binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
                 Handler().postDelayed({
                     if (workingMode == WorkingMode.TEST) {
                         showMessage(R.string.test_mode_end_msg)
                     }
+                    Log.d("Hello", "UI: try to click on process payment button")
+
+                    DropManager.startWorkTimeInMillis?.let {
+                        showMessage(getString(R.string.checkout_timing_msg, getCheckoutTiming(it, System.currentTimeMillis())))
+                        DropManager.startWorkTimeInMillis = null
+                    }
+
                     binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
 
                 }, 200)
             }
         }, 1000)
+    }
+
+    private fun getCheckoutTiming(startWorkTimeInMillis: Long, endWorkTimeInMillis: Long): String {
+        val checkoutInSeconds = (endWorkTimeInMillis - startWorkTimeInMillis) / 1000
+        return "${checkoutInSeconds} sec."
     }
 
     private fun getJSToFillCheckoutForm(): String {
