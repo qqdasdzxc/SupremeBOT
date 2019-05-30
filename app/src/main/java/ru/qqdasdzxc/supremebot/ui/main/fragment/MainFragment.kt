@@ -46,6 +46,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun setWaitingUIState() {
+        binding.mainLogoView.show()
+        binding.mainHelloLabelView.show()
+        binding.mainNickLabelView.show()
         binding.startButton.show()
         binding.testButton.show()
         binding.mainWebView.hide()
@@ -53,6 +56,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun setWorkingUIState() {
+        binding.mainLogoView.hide()
+        binding.mainHelloLabelView.hide()
+        binding.mainNickLabelView.hide()
         binding.startButton.hide()
         binding.testButton.hide()
         binding.stopButton.show()

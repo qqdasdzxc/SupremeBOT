@@ -5,6 +5,10 @@ package ru.qqdasdzxc.supremebot
 //ссылка в бесплатном приложении для перехода на платное приложение
 //https://play.google.com/store/apps/details?id=com.gledlingvo
 
+//faq
+//1) profile
+
+
 //ПОДУМАТЬ
 //todo подумать что лучше - цепать сразу все элементы или пройтись по чайлдам вручную
 //doc.child(0).child(1).child(2).child(1)

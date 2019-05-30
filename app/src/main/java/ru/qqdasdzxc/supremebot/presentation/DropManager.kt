@@ -125,22 +125,24 @@ class DropManager {
             val neededSizes =
                 if (userProfile?.itemTypeValue == "Shoes") userProfile?.itemSneakersNeededSizes else userProfile?.itemClothNeededSizes
             val pageDocument = Jsoup.connect(clothFullHref).get()
-            val availableSizes = pageDocument.getElementById("size").children()
+            pageDocument.getElementById("size")?.let {
+                val availableSizes = it.children()
 
-            if (neededSizes.isNullOrEmpty()) {
-                Log.d("Hello", "DropManager: hit one size")
-                pickFirstAvailableSize.postValue(true)
-                return@launch
-            }
-
-            for (neededSize in neededSizes) {
-                val filteredSize = availableSizes.firstOrNull {
-                    it.toString().contains(neededSize)
-                }
-                filteredSize?.let {
-                    Log.d("Hello", "DropManager: hit $neededSize")
-                    sizeValueLiveData.postValue(it.attr("value"))
+                if (neededSizes.isNullOrEmpty()) {
+                    Log.d("Hello", "DropManager: hit one size")
+                    pickFirstAvailableSize.postValue(true)
                     return@launch
+                }
+
+                for (neededSize in neededSizes) {
+                    val filteredSize = availableSizes.firstOrNull { element ->
+                        element.toString().contains(neededSize)
+                    }
+                    filteredSize?.let { element ->
+                        Log.d("Hello", "DropManager: hit $neededSize")
+                        sizeValueLiveData.postValue(element.attr("value"))
+                        return@launch
+                    }
                 }
             }
 

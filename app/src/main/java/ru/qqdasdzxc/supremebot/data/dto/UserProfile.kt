@@ -36,10 +36,13 @@ data class UserProfile (
     var cardCVV: String? = null
 ) {
     fun validateItemName(childString: String): Boolean {
-        if (itemTitleKeyWords == null || childString.contains(SOLD_OUT)) return false
+        //if (itemTitleKeyWords == null || childString.contains(SOLD_OUT)) return false
+        if (childString.contains("SOLD OUT")) return false
 
-        for (keyword in itemTitleKeyWords!!) {
-            if (!childString.contains(keyword, true)) return false
+        itemTitleKeyWords?.let {
+            for (keyword in it) {
+                if (!childString.contains(keyword, true)) return false
+            }
         }
 
         if (isRandomColor) return true

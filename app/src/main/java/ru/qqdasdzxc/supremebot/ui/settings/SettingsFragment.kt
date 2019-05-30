@@ -5,6 +5,7 @@ import android.transition.TransitionManager
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.lifecycle.Observer
 import com.google.android.material.chip.Chip
@@ -85,6 +86,10 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
 
         binding.settingsItemSection.itemKeyWordsAddView.setOnClickListener {
             addKeyWordFragment.show(activity!!.supportFragmentManager)
+        }
+
+        binding.settingsItemSection.itemHelpView.setOnClickListener {
+            AlertDialog.Builder(activity!!).setMessage(R.string.settings_item_title_help_msg).show()
         }
 
         binding.settingsItemSection.randomColorSwitchView.setOnCheckedChangeListener { _, isChecked ->

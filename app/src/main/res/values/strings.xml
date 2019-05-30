@@ -27,6 +27,10 @@
     <string name="settings_item_section_title">Item section</string>
     <string name="settings_item_type_title">Type</string>
     <string name="settings_item_title_key_words_title">Title key words</string>
+    <string name="settings_item_title_help_msg">To cop an item you should add one or more title words. Examples: \'box\', \'logo\', \'tee\'
+        or \'tee\', \'logo\', \'box\'.
+        \nDo not add title key words like this: \'tee box logo\' as one word.
+        \nFind out the exact name and color of the item before drop!</string>
     <string name="settings_add_item_title_keyword_action_title">Add</string>
     <string name="settings_item_color_name_title">Color name</string>
     <string name="settings_item_random_color_switch_title">Random color</string>

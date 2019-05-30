@@ -58,6 +58,17 @@
                 app:layout_constraintTop_toBottomOf="@id/item_type_spinner"
                 tools:ignore="ContentDescription"/>
 
+        <ImageView
+                android:id="@+id/item_help_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/start_end_margin"
+                app:srcCompat="@drawable/ic_help"
+                app:layout_constraintStart_toEndOf="@id/item_key_words_add_view"
+                app:layout_constraintTop_toTopOf="@id/item_key_words_add_view"
+                app:layout_constraintBottom_toBottomOf="@id/item_key_words_add_view"
+                tools:ignore="ContentDescription"/>
+
         <com.google.android.material.chip.ChipGroup
                 android:id="@+id/item_key_words_group_view"
                 android:layout_width="0dp"
