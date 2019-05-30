@@ -16,6 +16,36 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <TextView
+                android:id="@+id/main_hello_label_view"
+                style="@style/TitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hello_label"
+                app:layout_constraintBottom_toTopOf="@id/main_logo_view"
+                app:layout_constraintStart_toStartOf="@id/main_logo_view"/>
+
+        <ImageView
+                android:id="@+id/main_logo_view"
+                android:layout_width="200dp"
+                android:layout_height="80dp"
+                app:srcCompat="@mipmap/supreme_logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/center_horizontal_guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:srcCompat="@mipmap/supreme_logo"
+                tools:ignore="ContentDescription"/>
+
+        <TextView
+                android:id="@+id/main_nick_label_view"
+                style="@style/TitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/qqdasdzxc_label"
+                app:layout_constraintTop_toBottomOf="@id/main_logo_view"
+                app:layout_constraintEnd_toEndOf="@id/main_logo_view"/>
+
         <ImageView
                 android:id="@+id/main_settings_view"
                 android:layout_width="wrap_content"
