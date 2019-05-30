@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hello Supreme</string>
+    <string name="app_name">Hello!SupremeCop</string>
 
     <string name="settings">Settings</string>
 
@@ -7,7 +7,7 @@
     <string name="test">Test checkout</string>
     <string name="start">Start search</string>
     <string name="stop">Stop</string>
-    <string name="hello_label">Hello!</string>
+    <string name="hello_label">Hello!SupremeCop\nby @qqdasdzxc</string>
     <string name="qqdasdzxc_label">by @qqdasdzxc</string>
 
     <!-- messages -->
