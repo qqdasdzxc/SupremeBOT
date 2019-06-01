@@ -16,6 +16,9 @@ package ru.qqdasdzxc.supremebot
 //doc.getElementsContainingOwnText("Apple Coaches")
 //doc.allElements.firstOrNull { it.attributes().get("class") == "turbolink_scroller" }
 
+//https://www.cleverbrush.com/editor/
+//roboto
+
 //список сайтов на будущее
 //Footlocker
 //Footaction
