@@ -250,7 +250,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun getCheckoutTiming(startWorkTimeInMillis: Long, endWorkTimeInMillis: Long): String {
         val checkoutInSeconds = (endWorkTimeInMillis - startWorkTimeInMillis) / 1000
-        if (checkoutInSeconds > 8) return "8 sec."
+        if (checkoutInSeconds in 8..12) return "8 sec."
         return "$checkoutInSeconds sec."
     }
 
