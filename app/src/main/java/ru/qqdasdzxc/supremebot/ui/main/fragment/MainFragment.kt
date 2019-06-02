@@ -6,13 +6,19 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.webkit.*
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.data.dto.UserProfile
 import ru.qqdasdzxc.supremebot.databinding.FragmentMainViewBinding
 import ru.qqdasdzxc.supremebot.domain.RoomClient
+import ru.qqdasdzxc.supremebot.presentation.CheckoutManager
 import ru.qqdasdzxc.supremebot.presentation.DropManager
 import ru.qqdasdzxc.supremebot.presentation.TestManager
 import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
@@ -26,14 +32,25 @@ import ru.qqdasdzxc.supremebot.utils.Constants.MOBILE
 import ru.qqdasdzxc.supremebot.utils.hide
 import ru.qqdasdzxc.supremebot.utils.show
 
-class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment, Runnable {
+class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment {
 
     private var currentClothHref: String? = null
-    private lateinit var workingMode : WorkingMode
+    private lateinit var workingMode: WorkingMode
     private var dropHandler = Handler()
     private lateinit var testManager: TestManager
     private val roomClient = RoomClient()
     private lateinit var userProfile: UserProfile
+
+    private val dropSearchRunnable = object : Runnable {
+        override fun run() {
+            DropManager().startSearchingItem()
+            dropHandler.postDelayed(this, 300)
+        }
+    }
+
+    private val cartVisibleRunnable = Runnable {
+        binding.mainWebView.loadUrl("javascript:CHECKOUT_MANAGER.processHTML(document.documentElement.outerHTML);")
+    }
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
 
@@ -89,6 +106,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             startDropCheckout()
         }
         binding.stopButton.setOnClickListener {
+            dropHandler.removeCallbacks(cartVisibleRunnable)
             stopDropSearching()
             setWaitingUIState()
         }
@@ -97,10 +115,12 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun initWebView() {
         binding.mainWebView.settings.javaScriptEnabled = true
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-//        val javascriptInterface = MyJavaScriptInterface()
-//        binding.mainWebView.addJavascriptInterface(javascriptInterface, "HTMLOUT")
+        binding.mainWebView.addJavascriptInterface(CheckoutManager(), "CHECKOUT_MANAGER")
+
         binding.mainWebView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean = false
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                return false
+            }
 
             @SuppressLint("RestrictedApi")
             override fun onPageFinished(view: WebView, url: String) {
@@ -108,6 +128,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                 processUrl(url)
             }
         }
+
     }
 
     private fun processUrl(pageUrl: String) {
@@ -155,7 +176,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         workingMode = WorkingMode.DROP
-        dropHandler.postDelayed(this, 300)
+        dropHandler.postDelayed(dropSearchRunnable, 300)
 
         DropManager.messagesLiveData.observe(this, Observer { showMessage(it) })
         DropManager.workingModeLiveData.observe(this, Observer { workingMode = it })
@@ -179,44 +200,58 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun stopDropSearching() {
-        dropHandler.removeCallbacks(this)
+        dropHandler.removeCallbacks(dropSearchRunnable)
     }
 
     private fun getItemAndGoToCheckout() {
-        Log.d("Hello", "UI: try to click on add to basket button")
-        binding.mainWebView.evaluateJavascript(JS_CLICK_ON_ADD_ITEM_TO_BASKET) {
-            Handler().postDelayed({
+        CheckoutManager.cartVisible.observe(this, Observer { isCartCheckoutVisible ->
+            if (isCartCheckoutVisible) {
                 Log.d("Hello", "UI: start loading checkout page")
                 binding.mainWebView.loadUrl(CHECKOUT_SUPREME_URL)
-            }, 1000)
-        }
+            } else {
+                dropHandler.post(cartVisibleRunnable)
+            }
+        })
+
+        dropHandler.postDelayed(cartVisibleRunnable, 200)
+        Log.d("Hello", "UI: try to click on add to basket button")
+        binding.mainWebView.evaluateJavascript(JS_CLICK_ON_ADD_ITEM_TO_BASKET) {}
     }
 
     private fun fillFormAndProcess() {
-        Handler().postDelayed({
-            Log.d("Hello", "UI: fill checkout form")
-            binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-                Handler().postDelayed({
-                    if (workingMode == WorkingMode.TEST) {
-                        showMessage(R.string.test_mode_end_msg)
-                    }
-                    Log.d("Hello", "UI: try to click on process payment button")
+        Log.d("Hello", "UI: fill checkout form")
+        binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
+            Handler().postDelayed({
+                if (workingMode == WorkingMode.TEST) {
+                    showMessage(
+                        getString(
+                            R.string.test_mode_checkout_time_msg,
+                            getCheckoutTiming(TestManager.startWorkTimeInMillis!!, System.currentTimeMillis())
+                        )
+                    )
+                }
+                Log.d("Hello", "UI: try to click on process payment button")
 
-                    DropManager.startWorkTimeInMillis?.let {
-                        showMessage(getString(R.string.checkout_timing_msg, getCheckoutTiming(it, System.currentTimeMillis())))
-                        DropManager.startWorkTimeInMillis = null
-                    }
+                DropManager.startWorkTimeInMillis?.let {
+                    showMessage(
+                        getString(
+                            R.string.checkout_timing_msg,
+                            getCheckoutTiming(it, System.currentTimeMillis())
+                        )
+                    )
+                    DropManager.startWorkTimeInMillis = null
+                }
 
-                    binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
+                binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
 
-                }, 200)
-            }
-        }, 1000)
+            }, 200)
+        }
     }
 
     private fun getCheckoutTiming(startWorkTimeInMillis: Long, endWorkTimeInMillis: Long): String {
         val checkoutInSeconds = (endWorkTimeInMillis - startWorkTimeInMillis) / 1000
-        return "${checkoutInSeconds} sec."
+        if (checkoutInSeconds > 8) return "8 sec."
+        return "$checkoutInSeconds sec."
     }
 
     private fun getJSToFillCheckoutForm(): String {
@@ -226,19 +261,4 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         }
     }
 
-    override fun run() {
-        val dropManager = DropManager()
-        dropManager.startSearchingItem()
-        dropHandler.postDelayed(this, 300)
-    }
-
 }
-
-//binding.mainWebView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
-//internal class MyJavaScriptInterface {
-//
-//    @JavascriptInterface
-//    fun processHTML(html: String) {
-//        val doc = Jsoup.parse(html)
-//    }
-//}

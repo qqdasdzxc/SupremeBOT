@@ -15,10 +15,9 @@
     <string name="did_not_find_an_item">Did not find an item</string>
     <string name="item_was_found_msg">Item was found</string>
     <string name="test_mode_start_working_msg">Searching first non sold out item</string>
-    <string name="test_mode_checkout_time_msg">Test mode: checkout in %s sec.</string>
+    <string name="test_mode_checkout_time_msg">Test mode: checkout in %s</string>
     <string name="drop_mode_start_working_msg">Searching new items</string>
     <string name="needed_sizes_sold_out_msg">Your needed sizes are sold out!</string>
-    <string name="test_mode_end_msg">Test mode ended, postcode is not filled specially</string>
     <string name="user_profile_empty_msg">Set your profile in settings!</string>
     <string name="checkout_timing_msg">Checkout timing is: %s</string>
 
