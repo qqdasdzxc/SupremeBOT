@@ -1,18 +1,15 @@
 package ru.qqdasdzxc.supremebot.ui.main.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.webkit.*
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.data.dto.UserProfile
@@ -33,6 +30,7 @@ import ru.qqdasdzxc.supremebot.utils.Constants.MOBILE
 import ru.qqdasdzxc.supremebot.utils.hide
 import ru.qqdasdzxc.supremebot.utils.show
 
+
 class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFragment {
 
     private var currentClothHref: String? = null
@@ -41,6 +39,17 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private lateinit var testManager: TestManager
     private val roomClient = RoomClient()
     private lateinit var userProfile: UserProfile
+
+    private val webClient = object : WebViewClient() {
+        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+            return false
+        }
+        @SuppressLint("RestrictedApi")
+        override fun onPageFinished(view: WebView, url: String) {
+            super.onPageFinished(view, url)
+            processUrl(url)
+        }
+    }
 
     private val dropSearchRunnable = object : Runnable {
         override fun run() {
@@ -64,12 +73,22 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun setWaitingUIState() {
+        activity!!.deleteDatabase("webview.db")
+        activity!!.deleteDatabase("webviewCache.db")
+
+        binding.mainWebView.clearCache(true)
+        binding.mainWebView.clearHistory()
+
+        clearCookies(activity!!)
+
         binding.mainHelloLabelView.show()
         binding.startButton.show()
         binding.testButton.show()
         binding.clearBasketButton.show()
         binding.mainWebView.hide()
         binding.stopButton.hide()
+
+        binding.mainWebView.webViewClient = null
     }
 
     private fun setWorkingUIState() {
@@ -103,9 +122,11 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             navController.navigate(R.id.settings_fragment)
         }
         binding.testButton.setOnClickListener {
+            binding.mainWebView.webViewClient = webClient
             startTestCheckout()
         }
         binding.startButton.setOnClickListener {
+            binding.mainWebView.webViewClient = webClient
             startDropCheckout()
         }
         binding.stopButton.setOnClickListener {
@@ -120,22 +141,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun initWebView() {
         binding.mainWebView.settings.javaScriptEnabled = true
-        binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        //binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.mainWebView.settings.blockNetworkImage = true
         binding.mainWebView.addJavascriptInterface(CheckoutManager(), "CHECKOUT_MANAGER")
-
-        binding.mainWebView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                return false
-            }
-
-            @SuppressLint("RestrictedApi")
-            override fun onPageFinished(view: WebView, url: String) {
-                super.onPageFinished(view, url)
-                processUrl(url)
-            }
-        }
-
     }
 
     private fun processUrl(pageUrl: String) {
@@ -162,7 +170,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startTestCheckout() {
-        binding.mainWebView.clearCache(true)
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
@@ -178,9 +185,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startDropCheckout() {
-        binding.mainWebView.clearCache(true)
-        binding.mainWebView.clearHistory()
-        binding.mainWebView.clearFormData()
         DropManager.refresh()
 
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
@@ -198,11 +202,13 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         })
         DropManager.getFirstSizeLiveData().observe(this, Observer {
             it?.let {
+                Log.d("Hello", "UI: getFirstSizeLiveData received")
                 getItemAndGoToCheckout()
             }
         })
         DropManager.getNeededSizeValueLiveData().observe(this, Observer {
             it?.let { valueSize ->
+                Log.d("Hello", "UI: getNeededSizeValueLiveData received")
                 binding.mainWebView.evaluateJavascript("document.getElementById('size').value = $valueSize;") {
                     getItemAndGoToCheckout()
                 }
@@ -217,6 +223,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun getItemAndGoToCheckout() {
         CheckoutManager.cartVisible.observe(this, Observer { isCartCheckoutVisible ->
             if (isCartCheckoutVisible) {
+                dropHandler.removeCallbacks(cartVisibleRunnable)
                 Log.d("Hello", "UI: start loading checkout page")
                 binding.mainWebView.loadUrl(CHECKOUT_SUPREME_URL)
             } else {
@@ -275,5 +282,23 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun startClearBasket() {
         binding.mainWebView.loadUrl(CART_SUPREME_URL)
         setWorkingUIState()
+    }
+
+    fun clearCookies(context: Context) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            Log.d("Hello", "Using clearCookies code for API >=" + Build.VERSION_CODES.LOLLIPOP_MR1.toString())
+            CookieManager.getInstance().removeAllCookies(null)
+            CookieManager.getInstance().flush()
+        } else {
+            Log.d("Hello", "Using clearCookies code for API <" + Build.VERSION_CODES.LOLLIPOP_MR1.toString())
+            val cookieSyncMngr = CookieSyncManager.createInstance(context)
+            cookieSyncMngr.startSync()
+            val cookieManager = CookieManager.getInstance()
+            cookieManager.removeAllCookie()
+            cookieManager.removeSessionCookie()
+            cookieSyncMngr.stopSync()
+            cookieSyncMngr.sync()
+        }
     }
 }

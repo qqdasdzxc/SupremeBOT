@@ -18,16 +18,15 @@ class CheckoutManager {
     fun processHTML(html: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val doc = Jsoup.parse(html)
-            if (doc.getElementById("cart").attr("class").isEmpty()) {
-                synchronized(cartLoaded) {
-                    if (!cartLoaded) {
-                        cartLoaded = true
-                        cartVisible.postValue(true)
-                    }
+            val cartElement = doc.getElementById("cart")
+            cartElement?.let {
+                if (it.attr("class").isEmpty()) {
+                    cartVisible.postValue(true)
+                } else {
+                    cartVisible.postValue(false)
                 }
-            } else {
-                cartVisible.postValue(false)
             }
+
         }
     }
 }
