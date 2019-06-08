@@ -4,6 +4,7 @@ object Constants {
     const val BASE_SUPREME_URL = "https://www.supremenewyork.com"
     const val CHECKOUT_SUPREME_URL = "https://www.supremenewyork.com/checkout"
     const val SHOP_SUPREME_URL = "https://www.supremenewyork.com/shop"
+    const val CART_SUPREME_URL = "https://www.supremenewyork.com/shop/cart"
     const val SOLD_OUT = "sold out"
     const val HREF_ATTR = "href"
     const val CHECKOUT = "checkout"

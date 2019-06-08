@@ -23,6 +23,7 @@ import ru.qqdasdzxc.supremebot.presentation.DropManager
 import ru.qqdasdzxc.supremebot.presentation.TestManager
 import ru.qqdasdzxc.supremebot.ui.base.BaseFragment
 import ru.qqdasdzxc.supremebot.ui.base.HandleBackPressFragment
+import ru.qqdasdzxc.supremebot.utils.Constants.CART_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_ADD_ITEM_TO_BASKET
@@ -66,6 +67,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.mainHelloLabelView.show()
         binding.startButton.show()
         binding.testButton.show()
+        binding.clearBasketButton.show()
         binding.mainWebView.hide()
         binding.stopButton.hide()
     }
@@ -74,6 +76,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.mainHelloLabelView.hide()
         binding.startButton.hide()
         binding.testButton.hide()
+        binding.clearBasketButton.hide()
         binding.stopButton.show()
         binding.mainWebView.show()
     }
@@ -110,11 +113,15 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             stopDropSearching()
             setWaitingUIState()
         }
+        binding.clearBasketButton.setOnClickListener {
+            startClearBasket()
+        }
     }
 
     private fun initWebView() {
         binding.mainWebView.settings.javaScriptEnabled = true
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        binding.mainWebView.settings.blockNetworkImage = true
         binding.mainWebView.addJavascriptInterface(CheckoutManager(), "CHECKOUT_MANAGER")
 
         binding.mainWebView.webViewClient = object : WebViewClient() {
@@ -155,6 +162,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startTestCheckout() {
+        binding.mainWebView.clearCache(true)
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
@@ -170,6 +178,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startDropCheckout() {
+        binding.mainWebView.clearCache(true)
+        binding.mainWebView.clearHistory()
+        binding.mainWebView.clearFormData()
         DropManager.refresh()
 
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
@@ -261,4 +272,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         }
     }
 
+    private fun startClearBasket() {
+        binding.mainWebView.loadUrl(CART_SUPREME_URL)
+        setWorkingUIState()
+    }
 }
