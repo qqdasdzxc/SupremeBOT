@@ -20,7 +20,8 @@ object Constants {
     const val JS_CLICK_ON_ADD_ITEM_TO_BASKET = "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
     const val JS_CLICK_ON_CHECKOUT_FROM_ITEM = "javascript:(function(){document.getElementsByClassName('button checkout')[0].click();})()"
 
-    const val JS_FILL_FORM_TEST_MODE = "javascript:" +
+    const val JS_FILL_FORM_TEST_MODE = "javascript:(function(){" +
+            "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
             "document.getElementById('order_billing_name').value = 'Harry Potter';" +
             "document.getElementById('order_email').value = 'harry_potter@gmail.com';" +
             "document.getElementById('order_tel').value = '+11111111111';" +
@@ -35,7 +36,8 @@ object Constants {
             "document.getElementById('credit_card_month').value = '11';" +
             "document.getElementById('credit_card_year').value = '2029';" +
             "document.getElementById('vval').value = '111';" +
-            "document.getElementById('order_terms').checked = 'true';"
+            "document.getElementById('order_terms').checked = 'true';" +
+            "document.getElementsByClassName('button')[0].click();})()"
 
     const val JS_CLICK_ON_PROCESS = "javascript:(function(){" +
             "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
