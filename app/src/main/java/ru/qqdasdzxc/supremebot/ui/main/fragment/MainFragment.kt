@@ -24,7 +24,6 @@ import ru.qqdasdzxc.supremebot.utils.Constants.CART_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT
 import ru.qqdasdzxc.supremebot.utils.Constants.CHECKOUT_SUPREME_URL
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_ADD_ITEM_TO_BASKET
-import ru.qqdasdzxc.supremebot.utils.Constants.JS_CLICK_ON_PROCESS
 import ru.qqdasdzxc.supremebot.utils.Constants.JS_FILL_FORM_TEST_MODE
 import ru.qqdasdzxc.supremebot.utils.Constants.MOBILE
 import ru.qqdasdzxc.supremebot.utils.hide
@@ -44,6 +43,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
             return false
         }
+
         @SuppressLint("RestrictedApi")
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
@@ -249,31 +249,25 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun fillFormAndProcess() {
         Log.d("Hello", "UI: fill checkout form")
         binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-            //Handler().post {//postDelayed({
-                if (workingMode == WorkingMode.TEST) {
-                    showMessage(
-                        getString(
-                            R.string.test_mode_checkout_time_msg,
-                            getCheckoutTiming(TestManager.startWorkTimeInMillis!!, System.currentTimeMillis())
-                        )
+            if (workingMode == WorkingMode.TEST) {
+                showMessage(
+                    getString(
+                        R.string.test_mode_checkout_time_msg,
+                        getCheckoutTiming(TestManager.startWorkTimeInMillis!!, System.currentTimeMillis())
                     )
-                }
-                Log.d("Hello", "UI: try to click on process payment button")
+                )
+            }
+            Log.d("Hello", "UI: try to click on process payment button")
 
-                DropManager.startWorkTimeInMillis?.let {
-                    showMessage(
-                        getString(
-                            R.string.checkout_timing_msg,
-                            getCheckoutTiming(it, System.currentTimeMillis())
-                        )
+            DropManager.startWorkTimeInMillis?.let {
+                showMessage(
+                    getString(
+                        R.string.checkout_timing_msg,
+                        getCheckoutTiming(it, System.currentTimeMillis())
                     )
-                    DropManager.startWorkTimeInMillis = null
-                }
-
-                //binding.mainWebView.loadUrl("javascript:CHECKOUT_MANAGER.showHtml(document.documentElement.outerHTML);")
-                //binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
-
-            //}//, 200)
+                )
+                DropManager.startWorkTimeInMillis = null
+            }
         }
     }
 
