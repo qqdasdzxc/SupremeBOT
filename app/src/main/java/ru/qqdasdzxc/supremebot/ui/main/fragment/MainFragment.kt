@@ -193,7 +193,13 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         workingMode = WorkingMode.DROP
         dropHandler.postDelayed(dropSearchRunnable, 300)
 
-        DropManager.messagesLiveData.observe(this, Observer { showMessage(it) })
+        DropManager.messagesLiveData.observe(this, Observer {
+            showMessage(it)
+            if (it == R.string.user_profile_empty_msg) {
+                dropHandler.removeCallbacks(dropSearchRunnable)
+                setWaitingUIState()
+            }
+        })
         DropManager.workingModeLiveData.observe(this, Observer { workingMode = it })
         DropManager.foundedClothHrefLiveData.observe(this, Observer {
             currentClothHref = it
@@ -231,7 +237,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             }
         })
 
-        dropHandler.postDelayed(cartVisibleRunnable, 200)
+        dropHandler.postDelayed(cartVisibleRunnable, 100)
         Log.d("Hello", "UI: try to click on add to basket button")
         binding.mainWebView.evaluateJavascript(JS_CLICK_ON_ADD_ITEM_TO_BASKET) {}
     }
@@ -268,9 +274,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun getCheckoutTiming(startWorkTimeInMillis: Long, endWorkTimeInMillis: Long): String {
-        val checkoutInSeconds = (endWorkTimeInMillis - startWorkTimeInMillis) / 1000
-        //if (checkoutInSeconds in 8..12) return "8 sec."
-        return "$checkoutInSeconds sec."
+        val checkoutStringBuilder = StringBuilder(((endWorkTimeInMillis - startWorkTimeInMillis) / 100).toString())
+        checkoutStringBuilder.insert(checkoutStringBuilder.length - 1, ".")
+        return "$checkoutStringBuilder sec."
     }
 
     private fun getJSToFillCheckoutForm(): String {
@@ -285,8 +291,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         setWorkingUIState()
     }
 
-    fun clearCookies(context: Context) {
-
+    private fun clearCookies(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             Log.d("Hello", "Using clearCookies code for API >=" + Build.VERSION_CODES.LOLLIPOP_MR1.toString())
             CookieManager.getInstance().removeAllCookies(null)
