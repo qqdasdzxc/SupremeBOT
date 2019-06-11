@@ -56,7 +56,8 @@ data class UserProfile (
         return true
     }
 
-    fun createFillFormJS(): String = "javascript:" +
+    fun createFillFormJS(): String = "javascript:(function(){" +
+            "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
             "document.getElementById('order_billing_name').value = '$userFullName';" +
             "document.getElementById('order_email').value = '$userEmail';" +
             "document.getElementById('order_tel').value = '$userTel';" +
@@ -71,5 +72,7 @@ data class UserProfile (
             "document.getElementById('credit_card_month').value = '$cardMonthValue';" +
             "document.getElementById('credit_card_year').value = '$cardYearValue';" +
             "document.getElementById('vval').value = '$cardCVV';" +
-            "document.getElementById('order_terms').checked = 'true';"
+            "document.getElementById('order_terms').checked = 'true';" +
+            "document.getElementsByClassName('button')[0].click();" +
+            "})()"
 }

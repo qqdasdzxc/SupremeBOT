@@ -21,7 +21,6 @@ object Constants {
     const val JS_CLICK_ON_CHECKOUT_FROM_ITEM = "javascript:(function(){document.getElementsByClassName('button checkout')[0].click();})()"
 
     const val JS_FILL_FORM_TEST_MODE = "javascript:" +
-
             "document.getElementById('order_billing_name').value = 'Harry Potter';" +
             "document.getElementById('order_email').value = 'harry_potter@gmail.com';" +
             "document.getElementById('order_tel').value = '+11111111111';" +

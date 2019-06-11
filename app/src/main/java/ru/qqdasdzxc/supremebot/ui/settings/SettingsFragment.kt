@@ -85,11 +85,11 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
         }
 
         binding.settingsItemSection.itemKeyWordsAddView.setOnClickListener {
-            addKeyWordFragment.show(activity!!.supportFragmentManager)
+            addKeyWordFragment.show(requireActivity().supportFragmentManager)
         }
 
         binding.settingsItemSection.itemHelpView.setOnClickListener {
-            AlertDialog.Builder(activity!!).setMessage(R.string.settings_item_title_help_msg).show()
+            AlertDialog.Builder(requireActivity()).setMessage(R.string.settings_item_title_help_msg).show()
         }
 
         binding.settingsItemSection.randomColorSwitchView.setOnCheckedChangeListener { _, isChecked ->
@@ -100,7 +100,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
         }
 
         binding.settingsItemSection.itemSizeEditView.setOnClickListener {
-            addSizeFragment.show(activity!!.supportFragmentManager)
+            addSizeFragment.show(requireActivity().supportFragmentManager)
         }
 
         binding.settingsBillingSection.billingCountrySpinner.adapter =

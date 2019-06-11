@@ -73,13 +73,13 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun setWaitingUIState() {
-        activity!!.deleteDatabase("webview.db")
-        activity!!.deleteDatabase("webviewCache.db")
+        requireActivity().deleteDatabase("webview.db")
+        requireActivity().deleteDatabase("webviewCache.db")
 
         binding.mainWebView.clearCache(true)
         binding.mainWebView.clearHistory()
 
-        clearCookies(activity!!)
+        clearCookies(requireActivity())
 
         binding.mainHelloLabelView.show()
         binding.startButton.show()
@@ -195,7 +195,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         //binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         workingMode = WorkingMode.DROP
-        dropHandler.postDelayed(dropSearchRunnable, 200)
+        dropHandler.post(dropSearchRunnable)
 
         DropManager.messagesLiveData.observe(this, Observer {
             showMessage(it)
@@ -249,7 +249,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun fillFormAndProcess() {
         Log.d("Hello", "UI: fill checkout form")
         binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-            Handler().post {//postDelayed({
+            //Handler().post {//postDelayed({
                 if (workingMode == WorkingMode.TEST) {
                     showMessage(
                         getString(
@@ -271,9 +271,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                 }
 
                 //binding.mainWebView.loadUrl("javascript:CHECKOUT_MANAGER.showHtml(document.documentElement.outerHTML);")
-                binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
+                //binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
 
-            }//, 200)
+            //}//, 200)
         }
     }
 
