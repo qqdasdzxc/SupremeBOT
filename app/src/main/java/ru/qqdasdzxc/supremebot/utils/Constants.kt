@@ -10,6 +10,11 @@ object Constants {
     const val CHECKOUT = "checkout"
     const val MOBILE = "mobile/"
 
+    //fb values
+    const val FB_ACTIVATIONS_TABLE = "activations"
+    const val FB_ACTIVATED_VALUE = "activated"
+    const val FB_DEVICE_ID_VALUE = "device_id"
+
 
     //js injections
     const val JS_CLICK_ON_ADD_ITEM_TO_BASKET = "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"

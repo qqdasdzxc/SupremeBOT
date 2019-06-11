@@ -11,7 +11,6 @@ class CheckoutManager {
 
     companion object {
         val cartVisible = MutableLiveData<Boolean>()
-        var cartLoaded = false
     }
 
     @JavascriptInterface

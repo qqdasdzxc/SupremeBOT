@@ -3,6 +3,15 @@
 
     <string name="settings">Settings</string>
 
+    <!-- login -->
+    <string name="activate_action_title">Activate</string>
+    <string name="activation_key_hint">Activation key</string>
+    <string name="activation_key_empty_msg">Enter activation key</string>
+    <string name="activation_key_is_invalid">Invalid activation key</string>
+    <string name="activation_key_is_used">Key is already activated by another user</string>
+    <string name="device_trouble">Your device have not an unique id. Try activate on another device!</string>
+    <string name="temporary_unavailable">Temporary unavailable</string>
+
     <!-- main -->
     <string name="test">Test checkout</string>
     <string name="start">Start search</string>
