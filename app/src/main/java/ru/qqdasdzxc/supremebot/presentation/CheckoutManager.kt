@@ -24,7 +24,9 @@ class CheckoutManager {
                 } else {
                     cartVisible.postValue(false)
                 }
+                return@launch
             }
+            cartVisible.postValue(false)
         }
     }
 

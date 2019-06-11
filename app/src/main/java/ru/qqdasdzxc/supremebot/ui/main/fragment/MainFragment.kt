@@ -54,7 +54,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private val dropSearchRunnable = object : Runnable {
         override fun run() {
             DropManager().startSearchingItem()
-            dropHandler.postDelayed(this, 300)
+            dropHandler.postDelayed(this, 200)
         }
     }
 
@@ -139,10 +139,14 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
         binding.mainWebView.settings.javaScriptEnabled = true
-        //binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        binding.mainWebView.settings.setRenderPriority(WebSettings.RenderPriority.HIGH)
+        binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.mainWebView.settings.blockNetworkImage = true
+        binding.mainWebView.settings.builtInZoomControls = false
+        binding.mainWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN;
         binding.mainWebView.addJavascriptInterface(CheckoutManager(), "CHECKOUT_MANAGER")
     }
 
@@ -191,7 +195,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         //binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         workingMode = WorkingMode.DROP
-        dropHandler.postDelayed(dropSearchRunnable, 300)
+        dropHandler.postDelayed(dropSearchRunnable, 200)
 
         DropManager.messagesLiveData.observe(this, Observer {
             showMessage(it)
@@ -245,7 +249,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun fillFormAndProcess() {
         Log.d("Hello", "UI: fill checkout form")
         binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
-            Handler().postDelayed({
+            Handler().post {//postDelayed({
                 if (workingMode == WorkingMode.TEST) {
                     showMessage(
                         getString(
@@ -269,7 +273,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                 //binding.mainWebView.loadUrl("javascript:CHECKOUT_MANAGER.showHtml(document.documentElement.outerHTML);")
                 binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
 
-            }, 200)
+            }//, 200)
         }
     }
 
