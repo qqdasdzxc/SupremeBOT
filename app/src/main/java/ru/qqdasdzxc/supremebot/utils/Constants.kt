@@ -16,6 +16,7 @@ object Constants {
     const val JS_CLICK_ON_CHECKOUT_FROM_ITEM = "javascript:(function(){document.getElementsByClassName('button checkout')[0].click();})()"
 
     const val JS_FILL_FORM_TEST_MODE = "javascript:" +
+
             "document.getElementById('order_billing_name').value = 'Harry Potter';" +
             "document.getElementById('order_email').value = 'harry_potter@gmail.com';" +
             "document.getElementById('order_tel').value = '+11111111111';" +
@@ -32,6 +33,10 @@ object Constants {
             "document.getElementById('vval').value = '111';" +
             "document.getElementById('order_terms').checked = 'true';"
 
-    const val JS_CLICK_ON_PROCESS = "javascript:(function(){document.getElementsByClassName('button')[0].click();})()"
+    const val JS_CLICK_ON_PROCESS = "javascript:(function(){" +
+            "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
+            "document.getElementsByClassName('button')[0].click();})()"
+
+    //getElementsByClass("g-recaptcha").attr("data-sitekey")
 
 }

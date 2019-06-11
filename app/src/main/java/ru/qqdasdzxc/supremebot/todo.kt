@@ -5,8 +5,11 @@ package ru.qqdasdzxc.supremebot
 //ссылка в бесплатном приложении для перехода на платное приложение
 //https://play.google.com/store/apps/details?id=com.gledlingvo
 
-//faq
-//1) profile
+//мб создать второе вебвью для чекаута для прохождения капчи
+
+//проверить работы функции возвращающей секунды чекаута
+
+//class "g-recaptcha" attr data-sitekey
 
 
 //ПОДУМАТЬ

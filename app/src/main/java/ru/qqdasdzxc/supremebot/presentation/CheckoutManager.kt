@@ -15,7 +15,7 @@ class CheckoutManager {
     }
 
     @JavascriptInterface
-    fun processHTML(html: String) {
+    fun processCheckoutButton(html: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val doc = Jsoup.parse(html)
             val cartElement = doc.getElementById("cart")
@@ -26,7 +26,11 @@ class CheckoutManager {
                     cartVisible.postValue(false)
                 }
             }
-
         }
+    }
+
+    @JavascriptInterface
+    fun showHtml(html: String) {
+        val doc = Jsoup.parse(html)
     }
 }

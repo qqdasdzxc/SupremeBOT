@@ -59,7 +59,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private val cartVisibleRunnable = Runnable {
-        binding.mainWebView.loadUrl("javascript:CHECKOUT_MANAGER.processHTML(document.documentElement.outerHTML);")
+        binding.mainWebView.loadUrl("javascript:CHECKOUT_MANAGER.processCheckoutButton(document.documentElement.outerHTML);")
     }
 
     override fun getLayoutResId(): Int = R.layout.fragment_main_view
@@ -171,7 +171,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun startTestCheckout() {
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
-        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        //binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         testManager = TestManager()
         testManager.startSearchingItem()
@@ -188,7 +188,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         DropManager.refresh()
 
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
-        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        //binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         workingMode = WorkingMode.DROP
         dropHandler.postDelayed(dropSearchRunnable, 300)
@@ -260,6 +260,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
                     DropManager.startWorkTimeInMillis = null
                 }
 
+                //binding.mainWebView.loadUrl("javascript:CHECKOUT_MANAGER.showHtml(document.documentElement.outerHTML);")
                 binding.mainWebView.evaluateJavascript(JS_CLICK_ON_PROCESS) {}
 
             }, 200)
@@ -268,7 +269,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun getCheckoutTiming(startWorkTimeInMillis: Long, endWorkTimeInMillis: Long): String {
         val checkoutInSeconds = (endWorkTimeInMillis - startWorkTimeInMillis) / 1000
-        if (checkoutInSeconds in 8..12) return "8 sec."
+        //if (checkoutInSeconds in 8..12) return "8 sec."
         return "$checkoutInSeconds sec."
     }
 
