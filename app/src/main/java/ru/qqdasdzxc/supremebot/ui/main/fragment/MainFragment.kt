@@ -9,7 +9,11 @@ import android.util.Log
 import android.view.View
 import android.webkit.*
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
 import ru.qqdasdzxc.supremebot.R
 import ru.qqdasdzxc.supremebot.data.WorkingMode
 import ru.qqdasdzxc.supremebot.data.dto.UserProfile
@@ -103,6 +107,12 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.mainWebView.hide()
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        CoroutineScope(Dispatchers.IO).launch {
+            val propdoc = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
+        }
+
         loadUserProfile()
         initWebView()
         initView()
@@ -174,7 +184,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun startTestCheckout() {
-        binding.mainWebView.loadUrl("javascript:document.open();document.close();")
+        //binding.mainWebView.loadUrl("javascript:document.open();document.close();")
         //binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         testManager = TestManager()
@@ -191,7 +201,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun startDropCheckout() {
         DropManager.refresh()
 
-        binding.mainWebView.loadUrl("javascript:document.open();document.close();")
+        //binding.mainWebView.loadUrl("javascript:document.open();document.close();")
         //binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         setWorkingUIState()
         workingMode = WorkingMode.DROP
