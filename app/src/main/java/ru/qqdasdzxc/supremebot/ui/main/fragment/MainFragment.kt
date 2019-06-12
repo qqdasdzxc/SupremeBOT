@@ -77,6 +77,8 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun setWaitingUIState() {
+        binding.mainWebView.loadUrl("javascript:document.open();document.close();")
+
         requireActivity().deleteDatabase("webview.db")
         requireActivity().deleteDatabase("webviewCache.db")
 
@@ -93,6 +95,11 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.stopButton.hide()
 
         binding.mainWebView.webViewClient = null
+
+        binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
+        CoroutineScope(Dispatchers.IO).launch {
+            val propdoc = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
+        }
     }
 
     private fun setWorkingUIState() {
@@ -242,6 +249,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun getItemAndGoToCheckout() {
         CheckoutManager.cartVisible.observe(this, Observer { isCartCheckoutVisible ->
+            Log.d("Hello", "UI: received cartVisibleLiveData, value = $isCartCheckoutVisible")
             if (isCartCheckoutVisible) {
                 dropHandler.removeCallbacks(cartVisibleRunnable)
                 Log.d("Hello", "UI: start loading checkout page")

@@ -20,6 +20,9 @@ object Constants {
     const val JS_CLICK_ON_ADD_ITEM_TO_BASKET = "javascript:(function(){document.getElementsByClassName('button')[2].click();})()"
     const val JS_CLICK_ON_CHECKOUT_FROM_ITEM = "javascript:(function(){document.getElementsByClassName('button checkout')[0].click();})()"
 
+    //const val JS_CLICK_ON_ADD_ITEM_TO_BASKET_TEST = "javascript:(function(){document.children[0].children[1].children[2].children[0].children[0].children[1].children[2].click();})()"
+
+
     const val JS_FILL_FORM_TEST_MODE = "javascript:(function(){" +
             "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
             "document.getElementById('order_billing_name').value = 'Harry Potter';" +
