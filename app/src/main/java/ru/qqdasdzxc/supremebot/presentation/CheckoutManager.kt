@@ -11,7 +11,10 @@ import org.jsoup.Jsoup
 class CheckoutManager {
 
     companion object {
-        val cartVisible = MutableLiveData<Boolean>()
+        var cartVisible = MutableLiveData<Boolean>()
+        fun refresh() {
+            cartVisible = MutableLiveData()
+        }
     }
 
     @JavascriptInterface

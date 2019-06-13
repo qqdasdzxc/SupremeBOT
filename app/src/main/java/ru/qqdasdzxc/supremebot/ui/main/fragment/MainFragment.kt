@@ -248,6 +248,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun getItemAndGoToCheckout() {
+        CheckoutManager.refresh()
         CheckoutManager.cartVisible.observe(this, Observer { isCartCheckoutVisible ->
             Log.d("Hello", "UI: received cartVisibleLiveData, value = $isCartCheckoutVisible")
             if (isCartCheckoutVisible) {
