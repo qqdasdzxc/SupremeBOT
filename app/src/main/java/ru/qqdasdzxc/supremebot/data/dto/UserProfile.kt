@@ -1,8 +1,8 @@
 package ru.qqdasdzxc.supremebot.data.dto
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import ru.qqdasdzxc.supremebot.utils.Constants.SOLD_OUT
 
 @Entity
 data class UserProfile (
@@ -33,8 +33,12 @@ data class UserProfile (
     var cardNumber: String? = null,
     var cardMonthValue: String? = null,
     var cardYearValue: String? = null,
-    var cardCVV: String? = null
+    var cardCVV: String? = null,
+
+    @Ignore
+    var jsCheckoutString: String? = null
 ) {
+
     fun validateItemName(childString: String): Boolean {
         //if (itemTitleKeyWords == null || childString.contains(SOLD_OUT)) return false
         if (childString.contains("SOLD OUT")) return false
@@ -56,23 +60,28 @@ data class UserProfile (
         return true
     }
 
-    fun createFillFormJS(): String = "javascript:(function(){" +
-            "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
-            "document.getElementById('order_billing_name').value = '$userFullName';" +
-            "document.getElementById('order_email').value = '$userEmail';" +
-            "document.getElementById('order_tel').value = '$userTel';" +
-            "document.getElementById('bo').value = '$userAddress';" +
-            "document.getElementById('oba3').value = '$userAddress2';" +
-            "document.getElementById('order_billing_address_3').value = '$userAddress3';" +
-            "document.getElementById('order_billing_city').value = '$userCity';" +
-            "document.getElementById('order_billing_zip').value = '$userPostCode';" +
-            "document.getElementById('order_billing_country').value = '$userCountryCodeValue';" +
-            "document.getElementById('credit_card_type').value = '$cardTypeValue';" +
-            "document.getElementById('cnb').value = '$cardNumber';" +
-            "document.getElementById('credit_card_month').value = '$cardMonthValue';" +
-            "document.getElementById('credit_card_year').value = '$cardYearValue';" +
-            "document.getElementById('vval').value = '$cardCVV';" +
-            "document.getElementById('order_terms').checked = 'true';" +
-            "document.getElementsByClassName('button')[0].click();" +
-            "})()"
+    fun createFillFormJS() {
+        jsCheckoutString = "javascript:(function(){" +
+                "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
+                "document.getElementById('order_billing_name').value = '$userFullName';" +
+                "document.getElementById('order_email').value = '$userEmail';" +
+                "document.getElementById('order_tel').value = '$userTel';" +
+                "document.getElementById('bo').value = '$userAddress';" +
+                "document.getElementById('oba3').value = '$userAddress2';" +
+                "document.getElementById('order_billing_address_3').value = '$userAddress3';" +
+                "document.getElementById('order_billing_city').value = '$userCity';" +
+                "document.getElementById('order_billing_zip').value = '$userPostCode';" +
+                "document.getElementById('order_billing_country').value = '$userCountryCodeValue';" +
+                "document.getElementById('credit_card_type').value = '$cardTypeValue';" +
+                "document.getElementById('cnb').value = '$cardNumber';" +
+                "document.getElementById('credit_card_month').value = '$cardMonthValue';" +
+                "document.getElementById('credit_card_year').value = '$cardYearValue';" +
+                "document.getElementById('vval').value = '$cardCVV';" +
+                "document.getElementById('order_terms').checked = 'true';" +
+                "document.getElementsByClassName('button')[0].click();" +
+                "})()"
+    }
+
+    fun getFillFormJS(): String = jsCheckoutString!!
+
 }

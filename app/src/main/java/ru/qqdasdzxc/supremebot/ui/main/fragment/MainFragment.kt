@@ -44,9 +44,6 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private lateinit var userProfile: UserProfile
 
     private val webClient = object : WebViewClient() {
-        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            return false
-        }
 
         @SuppressLint("RestrictedApi")
         override fun onPageFinished(view: WebView, url: String) {
@@ -79,11 +76,11 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun setWaitingUIState() {
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
 
-        requireActivity().deleteDatabase("webview.db")
-        requireActivity().deleteDatabase("webviewCache.db")
+//        requireActivity().deleteDatabase("webview.db")
+//        requireActivity().deleteDatabase("webviewCache.db")
 
-        binding.mainWebView.clearCache(true)
-        binding.mainWebView.clearHistory()
+//        binding.mainWebView.clearCache(true)
+//        binding.mainWebView.clearHistory()
 
         clearCookies(requireActivity())
 
@@ -129,6 +126,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         roomClient.getUserProfile().observe(this, Observer {
             it?.let { userProfile ->
                 this.userProfile = userProfile
+                userProfile.createFillFormJS()
                 DropManager.userProfile = userProfile
             }
         })
@@ -163,7 +161,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.mainWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         binding.mainWebView.settings.blockNetworkImage = true
         binding.mainWebView.settings.builtInZoomControls = false
-        binding.mainWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN;
+        binding.mainWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
         binding.mainWebView.addJavascriptInterface(CheckoutManager(), "CHECKOUT_MANAGER")
     }
 
@@ -299,7 +297,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private fun getJSToFillCheckoutForm(): String {
         return when (workingMode) {
             WorkingMode.TEST -> JS_FILL_FORM_TEST_MODE
-            WorkingMode.DROP -> userProfile.createFillFormJS()
+            WorkingMode.DROP -> userProfile.getFillFormJS()
         }
     }
 

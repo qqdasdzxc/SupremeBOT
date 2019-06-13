@@ -98,13 +98,13 @@ class FBManager(private val contentResolver: ContentResolver) {
 
             when {
                 dataSnapshot.child(key).child(FB_DEVICE_ID_VALUE).value.toString() == androidID -> {
-                    loadingLiveData.postValue(false)
+                    //loadingLiveData.postValue(false)
                     activationLiveData.postValue(key)
                 }
                 dataSnapshot.child(key).child(FB_ACTIVATED_VALUE).value.toString() == "0" -> {
                     fbReference.child(FB_ACTIVATIONS_TABLE).child(key).child(FB_ACTIVATED_VALUE).setValue(1)
                     fbReference.child(FB_ACTIVATIONS_TABLE).child(key).child(FB_DEVICE_ID_VALUE).setValue(androidID)
-                    loadingLiveData.postValue(false)
+                    //loadingLiveData.postValue(false)
                     activationLiveData.postValue(key)
                 }
                 else -> {
