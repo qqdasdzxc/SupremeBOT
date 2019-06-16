@@ -33,11 +33,11 @@ abstract class BaseFragment<B : ViewDataBinding> : Fragment() {
     @LayoutRes
     abstract fun getLayoutResId(): Int
 
-    fun showMessage(@StringRes messageResId: Int) {
+    open fun showMessage(@StringRes messageResId: Int) {
         showMessage(getString(messageResId))
     }
 
-    fun showMessage(message: String) {
+    open fun showMessage(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
