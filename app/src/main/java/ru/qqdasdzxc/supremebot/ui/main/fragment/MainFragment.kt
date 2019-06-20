@@ -43,12 +43,19 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     private val roomClient = RoomClient()
     private lateinit var userProfile: UserProfile
 
-    private val webClient = object : WebViewClient() {
-
+    private val mainWebClient = object : WebViewClient() {
         @SuppressLint("RestrictedApi")
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             processUrl(url)
+        }
+    }
+
+    private val checkoutWebClient = object : WebViewClient() {
+        @SuppressLint("RestrictedApi")
+        override fun onPageFinished(view: WebView, url: String) {
+            super.onPageFinished(view, url)
+            processCheckoutUrl(url)
         }
     }
 
@@ -75,6 +82,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
 
     private fun setWaitingUIState() {
         binding.mainWebView.loadUrl("javascript:document.open();document.close();")
+        binding.checkoutWebView.loadUrl("javascript:document.open();document.close();")
 
 //        requireActivity().deleteDatabase("webview.db")
 //        requireActivity().deleteDatabase("webviewCache.db")
@@ -89,9 +97,11 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.testButton.show()
         binding.clearBasketButton.show()
         binding.mainWebView.hide()
+        binding.checkoutWebView.hide()
         binding.stopButton.hide()
 
         binding.mainWebView.webViewClient = null
+        binding.checkoutWebView.webViewClient = null
 
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         CoroutineScope(Dispatchers.IO).launch {
@@ -112,6 +122,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         super.onViewCreated(view, savedInstanceState)
 
         binding.mainWebView.hide()
+        binding.checkoutWebView.hide()
         binding.mainWebView.loadUrl("https://www.supremenewyork.com/shop/all")
         CoroutineScope(Dispatchers.IO).launch {
             val propdoc = Jsoup.connect("https://www.supremenewyork.com/shop/all").get()
@@ -137,11 +148,13 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             navController.navigate(R.id.settings_fragment)
         }
         binding.testButton.setOnClickListener {
-            binding.mainWebView.webViewClient = webClient
+            binding.mainWebView.webViewClient = mainWebClient
+            binding.checkoutWebView.webViewClient = checkoutWebClient
             startTestCheckout()
         }
         binding.startButton.setOnClickListener {
-            binding.mainWebView.webViewClient = webClient
+            binding.mainWebView.webViewClient = mainWebClient
+            binding.checkoutWebView.webViewClient = checkoutWebClient
             startDropCheckout()
         }
         binding.stopButton.setOnClickListener {
@@ -163,6 +176,12 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
         binding.mainWebView.settings.builtInZoomControls = false
         binding.mainWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
         binding.mainWebView.addJavascriptInterface(CheckoutManager(), "CHECKOUT_MANAGER")
+
+        binding.checkoutWebView.settings.javaScriptEnabled = true
+        binding.checkoutWebView.settings.setRenderPriority(WebSettings.RenderPriority.HIGH)
+        binding.checkoutWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        binding.checkoutWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        binding.checkoutWebView.addJavascriptInterface(CheckoutManager(), "CHECKOUT_MANAGER")
     }
 
     private fun processUrl(pageUrl: String) {
@@ -182,8 +201,13 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             binding.mainWebView.goBack()
             return
         }
+    }
+
+    private fun processCheckoutUrl(pageUrl: String) {
         if (pageUrl.endsWith(CHECKOUT)) {
             Log.d("Hello", "UI: checkout page loaded")
+            binding.mainWebView.hide()
+            binding.checkoutWebView.show()
             fillFormAndProcess()
         }
     }
@@ -252,7 +276,7 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
             if (isCartCheckoutVisible) {
                 dropHandler.removeCallbacks(cartVisibleRunnable)
                 Log.d("Hello", "UI: start loading checkout page")
-                binding.mainWebView.loadUrl(CHECKOUT_SUPREME_URL)
+                binding.checkoutWebView.loadUrl(CHECKOUT_SUPREME_URL)
             } else {
                 dropHandler.post(cartVisibleRunnable)
             }
@@ -264,8 +288,9 @@ class MainFragment : BaseFragment<FragmentMainViewBinding>(), HandleBackPressFra
     }
 
     private fun fillFormAndProcess() {
+        //binding.checkoutWebView.loadUrl("javascript:CHECKOUT_MANAGER.showHtml(document.documentElement.outerHTML);")
         Log.d("Hello", "UI: fill checkout form")
-        binding.mainWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
+        binding.checkoutWebView.evaluateJavascript(getJSToFillCheckoutForm()) {
             if (workingMode == WorkingMode.TEST) {
                 showMessage(
                     getString(

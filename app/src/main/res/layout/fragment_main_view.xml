@@ -16,6 +16,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <WebView
+                android:id="@+id/checkout_web_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
         <TextView
                 android:id="@+id/main_hello_label_view"
                 style="@style/TitleTextView"

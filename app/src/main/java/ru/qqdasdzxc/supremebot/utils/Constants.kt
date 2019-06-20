@@ -24,7 +24,6 @@ object Constants {
 
 
     const val JS_FILL_FORM_TEST_MODE = "javascript:(function(){" +
-            "document.getElementsByClassName('g-recaptcha')[0].parentNode.removeChild(document.getElementsByClassName('g-recaptcha')[0]);" +
             "document.getElementById('order_billing_name').value = 'Harry Potter';" +
             "document.getElementById('order_email').value = 'harry_potter@gmail.com';" +
             "document.getElementById('order_tel').value = '+11111111111';" +
